@@ -1,0 +1,2036 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mala tukang Joykiy // JOYKIY-OS v2.6</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Silkscreen:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=VT323&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #10151b;
+            --chassis-light: #e5e6de;
+            --chassis-mid: #cfd1c7;
+            --chassis-dark: #9fa396;
+            --chassis-shadow: #676b5f;
+            --lcd-dark: #1f3309;
+            --lcd-mid: #4d7c17;
+            --lcd-bright: #9be828;
+            --lcd-glow: rgba(155, 232, 40, 0.55);
+            --neon-pink: #ff2a85;
+            --neon-pink-dark: #b8145a;
+            --paper-bg: #f4f2e8;
+            --paper-line: #dcd8c8;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        input, textarea, select {
+            user-select: text;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #222;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Technical Blueprint & Radar Grid Background */
+        .blueprint-bg {
+            background-color: #0e1318;
+            background-image: 
+                radial-gradient(circle at 18% 22%, rgba(155, 232, 40, 0.05) 0%, transparent 45%),
+                radial-gradient(circle at 82% 75%, rgba(255, 42, 133, 0.05) 0%, transparent 45%),
+                linear-gradient(rgba(130, 160, 175, 0.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(130, 160, 175, 0.06) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+        }
+
+        .radar-ring {
+            position: fixed;
+            border: 1px solid rgba(155, 232, 40, 0.08);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Typography Classes */
+        .font-pixel { font-family: 'Silkscreen', monospace; }
+        .font-lcd { font-family: 'VT323', monospace; }
+        .font-mono-tech { font-family: 'Space Mono', monospace; }
+
+        /* Skeuomorphic Metallic Chassis */
+        .y2k-chassis {
+            background: linear-gradient(145deg, #eceee6 0%, #d4d6cc 48%, #c0c3b8 100%);
+            border-radius: 18px;
+            border: 2px solid #f7f8f2;
+            box-shadow: 
+                0 22px 50px rgba(0, 0, 0, 0.75),
+                0 0 0 1px #4f5349,
+                inset 0 2px 3px rgba(255, 255, 255, 0.9),
+                inset 0 -4px 8px rgba(90, 94, 84, 0.45);
+            position: relative;
+        }
+
+        .y2k-subpanel {
+            background: linear-gradient(180deg, #dedfd6 0%, #c8cabf 100%);
+            border-radius: 12px;
+            border: 1px solid #f3f4ee;
+            box-shadow: 
+                0 3px 6px rgba(0, 0, 0, 0.18),
+                0 0 0 1px #8d9184,
+                inset 0 1px 1px rgba(255, 255, 255, 0.85);
+        }
+
+        .y2k-recess {
+            background: #b8bbb0;
+            border-radius: 9px;
+            box-shadow: 
+                inset 0 2px 5px rgba(45, 48, 40, 0.55),
+                0 1px 0 rgba(255, 255, 255, 0.75);
+            border: 1px solid #8a8e82;
+        }
+
+        /* Green Neon LCD Screen */
+        .lcd-screen {
+            background: radial-gradient(ellipse at 50% 30%, #6ba322 0%, #3d6810 65%, #233e07 100%);
+            border-radius: 8px;
+            border: 2px solid #4c5244;
+            box-shadow: 
+                inset 0 3px 10px rgba(10, 22, 2, 0.85),
+                inset 0 0 18px rgba(155, 232, 40, 0.25),
+                0 1px 0 rgba(255, 255, 255, 0.8);
+            position: relative;
+            overflow: hidden;
+            color: #d6ff7f;
+            text-shadow: 0 0 6px rgba(175, 255, 65, 0.75);
+        }
+
+        /* Glossy Glass Reflection + Scanlines on LCD */
+        .lcd-screen::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 45%;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.03) 100%);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .lcd-screen::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(15, 30, 5, 0.22) 0px,
+                rgba(15, 30, 5, 0.22) 1px,
+                transparent 1px,
+                transparent 3px
+            );
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        /* Powered Off LCD State */
+        .console-powered-off .lcd-screen {
+            background: #232b1c !important;
+            color: #36422b !important;
+            text-shadow: none !important;
+        }
+        .console-powered-off .lcd-content {
+            opacity: 0.15;
+            filter: grayscale(1);
+        }
+
+        /* Hardware Tactile Buttons */
+        .hw-btn {
+            background: linear-gradient(180deg, #f5f6f0 0%, #cfd2c7 100%);
+            border: 1px solid #7c8074;
+            border-radius: 6px;
+            box-shadow: 
+                0 2px 3px rgba(0, 0, 0, 0.28),
+                inset 0 1px 0 rgba(255, 255, 255, 0.95);
+            transition: transform 0.08s ease, box-shadow 0.08s ease;
+            cursor: pointer;
+        }
+        .hw-btn:active {
+            transform: translateY(1px);
+            box-shadow: 
+                0 1px 1px rgba(0, 0, 0, 0.3),
+                inset 0 2px 4px rgba(0, 0, 0, 0.25);
+        }
+
+        .pink-btn {
+            background: linear-gradient(180deg, #ff63a5 0%, #e61e73 55%, #b81158 100%);
+            border: 1px solid #7a0938;
+            border-radius: 6px;
+            color: #fff;
+            box-shadow: 
+                0 2px 5px rgba(230, 30, 115, 0.45),
+                inset 0 1px 1px rgba(255, 210, 230, 0.85);
+            transition: all 0.1s ease;
+            cursor: pointer;
+        }
+        .pink-btn:hover {
+            filter: brightness(1.08);
+            box-shadow: 0 0 10px rgba(255, 42, 133, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.9);
+        }
+        .pink-btn:active {
+            transform: translateY(1px);
+        }
+
+        /* Custom Range Sliders (Y2K Pink Track + Metallic Thumb) */
+        input[type="range"].y2k-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 7px;
+            background: linear-gradient(90deg, #ff2a85, #ff7eb5);
+            border-radius: 999px;
+            border: 1px solid #75796e;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+            outline: none;
+        }
+        input[type="range"].y2k-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            background: linear-gradient(180deg, #ffffff 0%, #c6c9be 100%);
+            border: 1px solid #5c6055;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.45), inset 0 1px 0 #fff;
+            cursor: pointer;
+        }
+
+        /* Mood Face Buttons */
+        .mood-orb {
+            background: radial-gradient(circle at 35% 30%, #4d5446 0%, #242920 85%);
+            border: 2px solid #6b7064;
+            box-shadow: inset 0 3px 6px rgba(0,0,0,0.7), 0 1px 0 rgba(255,255,255,0.7);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .mood-orb.active {
+            background: radial-gradient(circle at 35% 30%, #e8ff9c 0%, #9be828 55%, #5b9912 100%);
+            border-color: #d6ff7f;
+            box-shadow: 
+                0 0 15px rgba(155, 232, 40, 0.85),
+                inset 0 2px 5px rgba(255, 255, 255, 0.8);
+        }
+
+        /* Spinning CD Disc */
+        .cd-disc {
+            background: conic-gradient(
+                from 0deg,
+                #d7dde0 0deg,
+                #a2f5d8 40deg,
+                #f8b4d9 85deg,
+                #ffffff 130deg,
+                #9be828 180deg,
+                #b8d8ff 235deg,
+                #f5d0fe 290deg,
+                #d7dde0 360deg
+            );
+            border-radius: 50%;
+            box-shadow: 
+                0 3px 8px rgba(0,0,0,0.4),
+                inset 0 0 0 2px rgba(255,255,255,0.8);
+            position: relative;
+        }
+        .cd-spin {
+            animation: spinCD 4.5s linear infinite;
+        }
+        @keyframes spinCD {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Main Cream Paper Screen */
+        .paper-screen {
+            background-color: var(--paper-bg);
+            background-image: linear-gradient(to bottom, transparent 27px, rgba(180, 175, 158, 0.22) 28px);
+            background-size: 100% 28px;
+            border-radius: 10px;
+            border: 2px solid #8a8e82;
+            box-shadow: 
+                inset 0 3px 8px rgba(60, 58, 48, 0.25),
+                0 1px 0 rgba(255, 255, 255, 0.85);
+        }
+
+        /* Custom Scrollbar for Paper Screen */
+        .paper-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        .paper-scroll::-webkit-scrollbar-track {
+            background: #e4e1d3;
+            border-radius: 4px;
+        }
+        .paper-scroll::-webkit-scrollbar-thumb {
+            background: #b5b8ac;
+            border-radius: 4px;
+            border: 1px solid #8d9184;
+        }
+        .paper-scroll::-webkit-scrollbar-thumb:hover {
+            background: #ff2a85;
+        }
+
+        /* Hanging Keychain Sway */
+        .keychain-sway {
+            transform-origin: top center;
+            animation: gentleSway 6s ease-in-out infinite;
+        }
+        @keyframes gentleSway {
+            0%, 100% { transform: rotate(-0.8deg); }
+            50% { transform: rotate(0.8deg); }
+        }
+
+        /* Rotary Knob */
+        .rotary-knob {
+            background: radial-gradient(circle at 30% 30%, #5a6152 0%, #23281e 85%);
+            border: 2px solid #8fa876;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.6);
+            border-radius: 50%;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .rotary-knob::after {
+            content: "";
+            position: absolute;
+            top: 3px;
+            left: 50%;
+            width: 2px;
+            height: 7px;
+            background: #ff2a85;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        /* Pink Tilted Sticker */
+        .pink-sticker {
+            background: linear-gradient(135deg, #ff3b8d 0%, #e0166b 100%);
+            color: #fff;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+            transform: rotate(-5deg);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+        }
+        .pink-sticker:hover {
+            transform: rotate(-2deg) scale(1.04);
+            box-shadow: 0 8px 18px rgba(255, 42, 133, 0.55);
+        }
+
+        /* Blinking LED */
+        @keyframes pulseLed {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.35; }
+        }
+        .led-blink {
+            animation: pulseLed 1.4s infinite;
+        }
+
+        /* CRT / LCD Page Transition Flash */
+        @keyframes pageSwitchFlash {
+            0% { opacity: 0.25; transform: translateY(4px); filter: brightness(1.15); }
+            100% { opacity: 1; transform: translateY(0); filter: brightness(1); }
+        }
+        .page-transition {
+            animation: pageSwitchFlash 0.24s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="blueprint-bg text-slate-800 antialiased selection:bg-[#ff2a85] selection:text-white">
+
+    <!-- Decorative Radar Background Circles -->
+    <div class="radar-ring w-[520px] h-[520px] -top-32 -left-32"></div>
+    <div class="radar-ring w-[760px] h-[760px] -bottom-48 -right-48"></div>
+    <div class="radar-ring w-[340px] h-[340px] top-1/3 right-12"></div>
+
+    <!-- Top Technical Telemetry Bar -->
+    <header class="relative z-10 max-w-[1320px] mx-auto px-4 pt-3 pb-1 flex flex-wrap justify-between items-center text-[10px] font-mono-tech tracking-widest text-slate-400">
+        <div class="flex items-center gap-3">
+            <span class="inline-block w-2 h-2 rounded-full bg-[#9be828] led-blink"></span>
+            <span>PRIVATE FREQUENCY // MALA-JOYKIY WORKSTATION</span>
+            <span class="hidden sm:inline text-slate-600">|</span>
+            <span class="hidden sm:inline text-[#ff5ca1]">FREELANCE & TECH ASSISTANCE CONSOLE</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <button id="soundToggleBtn" onclick="toggleAudioMute()" class="px-2 py-0.5 rounded bg-slate-800/90 border border-slate-600 text-[#9be828] hover:border-[#ff2a85] transition cursor-pointer">
+                SFX: <span id="sfxStatusText">ON</span>
+            </button>
+            <span>LOCAL TIME <span id="liveClock" class="text-slate-200 font-bold">10:47:00</span></span>
+        </div>
+    </header>
+
+    <!-- Main 3-Column Y2K Workstation Layout -->
+    <main class="relative z-10 max-w-[1320px] mx-auto px-3 sm:px-5 py-4">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+
+            <!-- =========================================================
+                 COLUMN 1: HANGING KEYCHAIN / ID TAG WIDGET (Left)
+                 ========================================================= -->
+            <aside class="lg:col-span-2 flex flex-col items-center keychain-sway">
+                <!-- Metallic Hanging Strap / Loop -->
+                <div class="w-16 h-11 border-[5px] border-[#b7bbb0] rounded-t-full -mb-2 z-0 shadow-md" style="box-shadow: inset 0 2px 3px rgba(255,255,255,0.8), 0 4px 8px rgba(0,0,0,0.5);"></div>
+                
+                <!-- Keychain Body -->
+                <div class="y2k-chassis w-full max-w-[230px] p-3 flex flex-col items-center z-10">
+                    <!-- Top Metal Eyelet -->
+                    <div class="w-7 h-2.5 rounded-full bg-[#2b3028] border border-[#f5f6f0] shadow-inner mb-2.5"></div>
+
+                    <!-- Oval Mascot Frame -->
+                    <div class="w-full aspect-[4/4.6] rounded-[46px] p-2 y2k-recess flex items-center justify-center relative overflow-hidden">
+                        <div class="w-full h-full rounded-[38px] overflow-hidden border-2 border-[#758a58] relative bg-gradient-to-b from-[#d8f3a8] via-[#9bd654] to-[#4f821c] flex flex-col items-center justify-end">
+                            <!-- Retro Y2K Anime Mascot SVG Illustration -->
+                            <svg viewBox="0 0 200 230" class="w-full h-full object-cover">
+                                <defs>
+                                    <radialGradient id="bgGlow" cx="50%" cy="35%" r="60%">
+                                        <stop offset="0%" stop-color="#f2ffd6"/>
+                                        <stop offset="65%" stop-color="#9fe04b"/>
+                                        <stop offset="100%" stop-color="#487818"/>
+                                    </radialGradient>
+                                    <linearGradient id="hairGrad" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="#8cf038"/>
+                                        <stop offset="50%" stop-color="#4ca818"/>
+                                        <stop offset="100%" stop-color="#285c0b"/>
+                                    </linearGradient>
+                                </defs>
+                                <rect width="200" height="230" fill="url(#bgGlow)"/>
+                                <!-- Tech Grid Lines in Avatar BG -->
+                                <g stroke="rgba(255,255,255,0.28)" stroke-width="1">
+                                    <line x1="0" y1="40" x2="200" y2="40"/>
+                                    <line x1="0" y1="90" x2="200" y2="90"/>
+                                    <line x1="0" y1="140" x2="200" y2="140"/>
+                                    <line x1="50" y1="0" x2="50" y2="230"/>
+                                    <line x1="150" y1="0" x2="150" y2="230"/>
+                                </g>
+                                <!-- Back Hair -->
+                                <path d="M42,85 Q32,165 46,215 L154,215 Q168,165 158,85 Z" fill="url(#hairGrad)" stroke="#1f4209" stroke-width="2.5"/>
+                                <!-- Cyber Headphones -->
+                                <rect x="28" y="84" width="16" height="36" rx="7" fill="#e8eae2" stroke="#36422b" stroke-width="2.5"/>
+                                <rect x="156" y="84" width="16" height="36" rx="7" fill="#e8eae2" stroke="#36422b" stroke-width="2.5"/>
+                                <circle cx="36" cy="102" r="4" fill="#ff2a85"/>
+                                <circle cx="164" cy="102" r="4" fill="#ff2a85"/>
+                                <path d="M36,85 Q100,22 164,85" fill="none" stroke="#e8eae2" stroke-width="6" stroke-linecap="round"/>
+                                <!-- Outfit / Sailor Cyber Collar -->
+                                <path d="M55,165 L145,165 L162,230 L38,230 Z" fill="#f5f6ef" stroke="#2f3b24" stroke-width="2.5"/>
+                                <path d="M68,165 L100,198 L132,165" fill="#77b82a" stroke="#2f3b24" stroke-width="2"/>
+                                <polygon points="100,192 91,206 100,213 109,206" fill="#ff2a85" stroke="#7a0938" stroke-width="1.5"/>
+                                <!-- Face -->
+                                <path d="M58,88 C58,136 76,154 100,154 C124,154 142,136 142,88 C142,56 122,46 100,46 C78,46 58,56 58,88 Z" fill="#fff3e8" stroke="#3c2e28" stroke-width="2.2"/>
+                                <!-- Anime Eyes (Y2K Sparkling Green) -->
+                                <ellipse cx="81" cy="105" rx="9" ry="12" fill="#23420a"/>
+                                <ellipse cx="81" cy="107" rx="6.5" ry="8.5" fill="#7ce026"/>
+                                <circle cx="78" cy="100" r="3.5" fill="#ffffff"/>
+                                <circle cx="84" cy="111" r="1.8" fill="#ffffff"/>
+                                <path d="M69,95 Q81,88 92,96" fill="none" stroke="#222" stroke-width="2.8" stroke-linecap="round"/>
+
+                                <ellipse cx="119" cy="105" rx="9" ry="12" fill="#23420a"/>
+                                <ellipse cx="119" cy="107" rx="6.5" ry="8.5" fill="#7ce026"/>
+                                <circle cx="116" cy="100" r="3.5" fill="#ffffff"/>
+                                <circle cx="122" cy="111" r="1.8" fill="#ffffff"/>
+                                <path d="M108,96 Q119,88 131,95" fill="none" stroke="#222" stroke-width="2.8" stroke-linecap="round"/>
+
+                                <!-- Blush & Cute Smile -->
+                                <ellipse cx="71" cy="121" rx="6" ry="3" fill="#ff7eb5" opacity="0.65"/>
+                                <ellipse cx="129" cy="121" rx="6" ry="3" fill="#ff7eb5" opacity="0.65"/>
+                                <path d="M94,127 Q100,133 106,127" fill="none" stroke="#9e3d56" stroke-width="2.2" stroke-linecap="round"/>
+
+                                <!-- Front Hair Bangs & Twin Side Locks -->
+                                <path d="M54,95 Q62,52 100,45 Q138,52 146,95 Q134,76 124,92 Q114,72 100,94 Q86,72 76,92 Q66,76 54,95 Z" fill="url(#hairGrad)" stroke="#1f4209" stroke-width="2.2"/>
+                                <path d="M52,92 Q44,148 54,185 Q64,152 62,108 Z" fill="url(#hairGrad)" stroke="#1f4209" stroke-width="2"/>
+                                <path d="M148,92 Q156,148 146,185 Q136,152 138,108 Z" fill="url(#hairGrad)" stroke="#1f4209" stroke-width="2"/>
+                            </svg>
+                            <!-- Name Badge Overlay -->
+                            <div class="absolute bottom-2 bg-[#162409]/85 backdrop-blur-xs border border-[#9be828] px-2.5 py-0.5 rounded-full text-[10px] font-pixel text-[#d6ff7f] tracking-wider shadow">
+                                MALA.EXE ★
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Keychain Technical Serial -->
+                    <div class="w-full flex justify-between items-center px-1.5 my-2 text-[9px] font-mono-tech text-slate-600 font-bold">
+                        <span>ID: JKY-01</span>
+                        <span class="text-[#e61e73]">● VERIFIED</span>
+                    </div>
+
+                    <!-- Mini Equalizer & Workload Capacity LCD -->
+                    <div class="w-full lcd-screen p-2.5">
+                        <div class="lcd-content relative z-10">
+                            <div class="flex justify-between items-center text-[10px] font-pixel mb-1">
+                                <span>SLOT STATUS</span>
+                                <span id="keychainStatusBadge" class="text-[#fff] bg-[#ff2a85] px-1.5 rounded">OPEN</span>
+                            </div>
+                            <div class="text-xs font-lcd tracking-wide text-[#e8ff9c] mb-1.5">
+                                BEBAN KERJA: <span id="workloadPercentText">42%</span> (AMAN)
+                            </div>
+                            <!-- Workload Progress Bar -->
+                            <div class="w-full h-2.5 bg-[#152405] rounded border border-[#8ac926] p-0.5 mb-2">
+                                <div id="workloadBar" class="h-full bg-[#9be828] rounded-xs transition-all duration-500" style="width: 42%;"></div>
+                            </div>
+                            <!-- Mini Animated Bars -->
+                            <div class="grid grid-cols-8 gap-1 h-7 items-end pt-1 border-t border-[#8ac926]/40" id="keychainBars">
+                                <div class="bg-[#9be828] h-3 rounded-t-xs transition-all duration-300"></div>
+                                <div class="bg-[#9be828] h-5 rounded-t-xs transition-all duration-300"></div>
+                                <div class="bg-[#9be828] h-2 rounded-t-xs transition-all duration-300"></div>
+                                <div class="bg-[#9be828] h-6 rounded-t-xs transition-all duration-300"></div>
+                                <div class="bg-[#9be828] h-4 rounded-t-xs transition-all duration-300"></div>
+                                <div class="bg-[#9be828] h-5 rounded-t-xs transition-all duration-300"></div>
+                                <div class="bg-[#9be828] h-3 rounded-t-xs transition-all duration-300"></div>
+                                <div class="bg-[#9be828] h-4 rounded-t-xs transition-all duration-300"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- =========================================================
+                 COLUMN 2: MAIN METALLIC HARDWARE CONSOLE (Center)
+                 ========================================================= -->
+            <section id="mainConsoleChassis" class="lg:col-span-8 y2k-chassis p-3.5 sm:p-5 transition-all duration-300">
+                
+                <!-- CONSOLE HEADER TOP BAR -->
+                <div class="flex flex-wrap justify-between items-center gap-2 pb-3 mb-3 border-b-2 border-[#a9ada0]">
+                    <div class="flex items-center gap-3">
+                        <h1 class="font-pixel text-lg sm:text-2xl font-bold tracking-tight text-slate-800 drop-shadow-[0_1px_0_rgba(255,255,255,0.9)]">
+                            Mala <span class="text-[#e61e73]">tukang</span> Joykiy
+                        </h1>
+                        <div class="hidden sm:flex flex-col text-[9px] font-mono-tech leading-tight text-slate-600 border-l-2 border-[#ff2a85] pl-2">
+                            <span class="font-bold text-slate-700">FREELANCE & BANTUAN TEKNIS</span>
+                            <span>SYS-V2.6 // JOYKIY-OS</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <!-- Speaker Grille Decoration -->
+                        <div class="hidden md:grid grid-cols-6 gap-1 px-2 py-1 y2k-recess">
+                            <span class="w-1 h-2.5 bg-slate-600 rounded-full"></span>
+                            <span class="w-1 h-2.5 bg-slate-600 rounded-full"></span>
+                            <span class="w-1 h-2.5 bg-slate-600 rounded-full"></span>
+                            <span class="w-1 h-2.5 bg-slate-600 rounded-full"></span>
+                            <span class="w-1 h-2.5 bg-slate-600 rounded-full"></span>
+                            <span class="w-1 h-2.5 bg-slate-600 rounded-full"></span>
+                        </div>
+
+                        <!-- Interactive Power Switch -->
+                        <button onclick="toggleConsolePower()" id="powerBtn" class="hw-btn px-3 py-1 flex items-center gap-1.5 text-[10px] font-pixel text-slate-800">
+                            <span id="powerLed" class="w-2.5 h-2.5 rounded-full bg-[#9be828] shadow-[0_0_8px_#9be828]"></span>
+                            <span>POWER</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TOP CONSOLE ROW: OSCILLOSCOPE + MOOD & STATUS -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-3.5 mb-3.5">
+                    
+                    <!-- Left: Frequency Monitor / Urgency & Complexity Simulator -->
+                    <div class="md:col-span-7 y2k-subpanel p-2.5">
+                        <div class="flex justify-between items-center text-[10px] font-pixel text-slate-700 mb-1.5 px-1">
+                            <span>01 / SIGNAL & ESTIMATOR WAVE</span>
+                            <span class="font-mono-tech text-[#e61e73] font-bold" id="waveHzLabel">98.4 MHz // NORMAL</span>
+                        </div>
+                        
+                        <!-- Green Oscilloscope LCD -->
+                        <div class="lcd-screen h-24 w-full mb-2.5 relative">
+                            <canvas id="oscilloscopeCanvas" class="lcd-content w-full h-full block"></canvas>
+                            <div class="lcd-content absolute bottom-1.5 left-2.5 right-2.5 flex justify-between text-[11px] font-lcd text-[#d6ff7f] z-10 pointer-events-none">
+                                <span>KECEPATAN: <strong id="speedReadout">STANDAR</strong></span>
+                                <span>ESTIMASI MULAI: <strong id="estPriceReadout">Rp 50.000</strong></span>
+                            </div>
+                        </div>
+
+                        <!-- 2 Neon Pink Physical Sliders -->
+                        <div class="grid grid-cols-2 gap-3 px-1 items-center">
+                            <div>
+                                <div class="flex justify-between text-[9px] font-mono-tech font-bold text-slate-600 mb-0.5">
+                                    <span>URGENSI / SPEED</span>
+                                    <span id="urgencyValText">50%</span>
+                                </div>
+                                <input type="range" id="urgencySlider" min="10" max="100" value="50" class="y2k-slider" oninput="updateWaveControls()">
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-[9px] font-mono-tech font-bold text-slate-600 mb-0.5">
+                                    <span>KERUMITAN TEKNIS</span>
+                                    <span id="complexityValText">40%</span>
+                                </div>
+                                <input type="range" id="complexitySlider" min="10" max="100" value="40" class="y2k-slider" oninput="updateWaveControls()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Mood & Status Selector -->
+                    <div class="md:col-span-5 y2k-subpanel p-2.5 flex flex-col justify-between">
+                        <div class="flex justify-between items-center text-[10px] font-pixel text-slate-700 mb-1.5 px-1">
+                            <span>02 / MALA STATUS</span>
+                            <span class="text-[9px] font-mono-tech text-slate-500">CLICK ORB</span>
+                        </div>
+
+                        <!-- 3 Circular Mood Face Buttons -->
+                        <div class="y2k-recess p-2.5 flex justify-around items-center gap-2 mb-2">
+                            <!-- Busy Orb -->
+                            <button onclick="setMalaMood('busy')" id="mood-busy" title="Mode Fokus Coding" class="mood-orb w-12 h-12 rounded-full flex items-center justify-center">
+                                <svg viewBox="0 0 36 36" class="w-8 h-8">
+                                    <circle cx="12" cy="14" r="2" fill="#1a240e"/>
+                                    <circle cx="24" cy="14" r="2" fill="#1a240e"/>
+                                    <path d="M11,24 L25,24" stroke="#1a240e" stroke-width="2.5" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                            <!-- Chill Orb -->
+                            <button onclick="setMalaMood('chill')" id="mood-chill" title="Mode Santai / Konsultasi" class="mood-orb w-12 h-12 rounded-full flex items-center justify-center">
+                                <svg viewBox="0 0 36 36" class="w-8 h-8">
+                                    <path d="M9,14 Q12,11 15,14" fill="none" stroke="#1a240e" stroke-width="2.2" stroke-linecap="round"/>
+                                    <path d="M21,14 Q24,11 27,14" fill="none" stroke="#1a240e" stroke-width="2.2" stroke-linecap="round"/>
+                                    <path d="M13,22 Q18,25 23,22" fill="none" stroke="#1a240e" stroke-width="2.2" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                            <!-- Ready / Happy Orb (Default Active) -->
+                            <button onclick="setMalaMood('ready')" id="mood-ready" title="Siap Terima Order Cepat!" class="mood-orb active w-12 h-12 rounded-full flex items-center justify-center">
+                                <svg viewBox="0 0 36 36" class="w-8 h-8">
+                                    <circle cx="12" cy="14" r="2.2" fill="#1a240e"/>
+                                    <circle cx="24" cy="14" r="2.2" fill="#1a240e"/>
+                                    <path d="M11,20 Q18,28 25,20" fill="none" stroke="#1a240e" stroke-width="2.5" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <!-- LCD Status Text Readout -->
+                        <div class="lcd-screen py-1.5 px-3 text-center">
+                            <div class="lcd-content relative z-10 font-lcd text-lg tracking-wider" id="moodStatusText">
+                                READY! GAS ORDER TUGAS ★
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MIDDLE CONSOLE ROW: TELEMETRY BAR (Knobs + LED Matrix + Bar Graph) -->
+                <div class="y2k-subpanel p-2 mb-4">
+                    <div class="lcd-screen px-3 py-2 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
+                        <!-- 2 Interactive Rotary Knobs -->
+                        <div class="lcd-content relative z-10 flex items-center gap-3">
+                            <div class="flex flex-col items-center">
+                                <div id="knob1" onclick="rotateKnob(1)" class="rotary-knob w-8 h-8" title="Putar Frekuensi CPU"></div>
+                                <span class="text-[9px] font-mono-tech mt-0.5">GAIN</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div id="knob2" onclick="rotateKnob(2)" class="rotary-knob w-8 h-8" style="transform: rotate(45deg);" title="Putar Mode Turbo"></div>
+                                <span class="text-[9px] font-mono-tech mt-0.5">TURBO</span>
+                            </div>
+                        </div>
+
+                        <!-- Dot LED Matrix -->
+                        <div id="dotLedMatrix" class="lcd-content relative z-10 grid grid-cols-10 gap-1 p-1.5 bg-[#192b07]/70 rounded border border-[#7cb524]/40">
+                            <!-- Populated by JS -->
+                        </div>
+
+                        <!-- Live Telemetry Bar Chart -->
+                        <div class="lcd-content relative z-10 flex-1 min-w-[140px] h-10 bg-[#192b07]/70 rounded border border-[#7cb524]/40 px-2 py-1 flex items-end gap-1" id="telemetryBars">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOTTOM CONSOLE AREA: 2-COLUMN WORKSPACE (Left Nav & CD Player | Right Main Cream Screen) -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-stretch">
+                    
+                    <!-- LEFT CONSOLE SIDEBAR (Channels + Category Filter + CD Player) -->
+                    <div class="md:col-span-12 flex flex-col gap-3.5">
+                        
+                        <!-- 1. SELECT A CHANNEL -->
+                        <div class="y2k-subpanel p-2.5">
+                            <div class="text-[10px] font-pixel text-slate-700 mb-1.5 px-1 flex justify-between">
+                                <span>SELECT A CHANNEL</span>
+                                <span class="text-[#e61e73]">CH-0<span id="activeChannelNum">1</span></span>
+                            </div>
+                            <div class="lcd-screen p-2 flex flex-col gap-1.5">
+                                <button onclick="switchChannel('home')" data-ch="home" class="channel-btn lcd-content relative z-10 flex items-center gap-2 text-left px-2 py-1.5 rounded bg-[#9be828]/25 border border-[#d6ff7f] text-white font-pixel text-[11px] transition cursor-pointer">
+                                    <span class="pink-btn w-5 h-5 flex items-center justify-center text-[10px] shrink-0">▶</span>
+                                    <span>HOME / LAYANAN</span>
+                                </button>
+                                <button onclick="switchChannel('order')" data-ch="order" class="channel-btn lcd-content relative z-10 flex items-center gap-2 text-left px-2 py-1.5 rounded hover:bg-[#9be828]/15 border border-transparent text-[#d6ff7f] font-pixel text-[11px] transition cursor-pointer">
+                                    <span class="hw-btn text-slate-800 w-5 h-5 flex items-center justify-center text-[10px] shrink-0">02</span>
+                                    <span>ORDER FORM</span>
+                                </button>
+                                <button onclick="switchChannel('tracker')" data-ch="tracker" class="channel-btn lcd-content relative z-10 flex items-center gap-2 text-left px-2 py-1.5 rounded hover:bg-[#9be828]/15 border border-transparent text-[#d6ff7f] font-pixel text-[11px] transition cursor-pointer">
+                                    <span class="hw-btn text-slate-800 w-5 h-5 flex items-center justify-center text-[10px] shrink-0">03</span>
+                                    <span>TRACKER</span>
+                                </button>
+                                <button onclick="switchChannel('portfolio')" data-ch="portfolio" class="channel-btn lcd-content relative z-10 flex items-center gap-2 text-left px-2 py-1.5 rounded hover:bg-[#9be828]/15 border border-transparent text-[#d6ff7f] font-pixel text-[11px] transition cursor-pointer">
+                                    <span class="hw-btn text-slate-800 w-5 h-5 flex items-center justify-center text-[10px] shrink-0">04</span>
+                                    <span>PORTFOLIO</span>
+                                </button>
+                                <button onclick="switchChannel('admin')" data-ch="admin" class="channel-btn lcd-content relative z-10 flex items-center gap-2 text-left px-2 py-1.5 rounded hover:bg-[#9be828]/15 border border-transparent text-[#ff9ec7] font-pixel text-[10px] transition cursor-pointer border-t border-[#8ac926]/30 mt-0.5 pt-1.5">
+                                    <span class="hw-btn text-slate-800 w-5 h-5 flex items-center justify-center text-[10px] shrink-0">05</span>
+                                    <span>JOKI ADMIN</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 2. CATEGORY FILTER -->
+                        <div class="y2k-subpanel p-2.5">
+                            <div class="text-[10px] font-pixel text-slate-700 mb-1.5 px-1">
+                                CATEGORY FILTER
+                            </div>
+                            <div class="flex flex-col gap-1.5" id="categoryFilterGroup">
+                                <button onclick="filterCategory('ALL')" data-cat="ALL" class="cat-btn pink-btn text-left px-2.5 py-1 text-[10px] font-pixel flex justify-between items-center">
+                                    <span>ALL SERVICES</span>
+                                    <span>★</span>
+                                </button>
+                                <button onclick="filterCategory('MAPEL')" data-cat="MAPEL" class="cat-btn hw-btn text-left px-2.5 py-1 text-[10px] font-pixel text-slate-700 flex justify-between items-center">
+                                    <span>MAPEL & CREATIVE</span>
+                                    <span class="text-[9px] text-slate-500">01</span>
+                                </button>
+                                <button onclick="filterCategory('VIDEO')" data-cat="VIDEO" class="cat-btn hw-btn text-left px-2.5 py-1 text-[10px] font-pixel text-slate-700 flex justify-between items-center">
+                                    <span>VIDEO & EDITING</span>
+                                    <span class="text-[9px] text-slate-500">02</span>
+                                </button>
+                                <button onclick="filterCategory('WEB')" data-cat="WEB" class="cat-btn hw-btn text-left px-2.5 py-1 text-[10px] font-pixel text-slate-700 flex justify-between items-center">
+                                    <span>WEBSITE & RPL</span>
+                                    <span class="text-[9px] text-slate-500">03</span>
+                                </button>
+                                <button onclick="filterCategory('DESAIN')" data-cat="DESAIN" class="cat-btn hw-btn text-left px-2.5 py-1 text-[10px] font-pixel text-slate-700 flex justify-between items-center">
+                                    <span>DESIGN GRAFIS</span>
+                                    <span class="text-[9px] text-slate-500">04</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 3. COMPACT DISC PLAYER (Web Audio Synth Lo-Fi) -->
+                        <div class="y2k-subpanel p-2.5 flex-1 flex flex-col justify-between">
+                            <div class="flex justify-between items-center text-[9px] font-pixel text-slate-700 mb-2 px-1">
+                                <span>COMPACT DISC</span>
+                                <span class="text-[#e61e73]">LO-FI SYNTH</span>
+                            </div>
+
+                            <!-- Spinning CD Bay -->
+                            <div class="y2k-recess p-3 flex items-center justify-center mb-2 relative">
+                                <div id="cdDiscEl" class="cd-disc w-24 h-24 flex items-center justify-center">
+                                    <!-- Inner Label -->
+                                    <div class="w-9 h-9 rounded-full bg-[#78b82a] border-2 border-white flex items-center justify-center shadow-inner">
+                                        <div class="w-3 h-3 rounded-full bg-[#242920] border border-slate-300"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Track LCD Display -->
+                            <div class="lcd-screen px-2.5 py-1.5 mb-2">
+                                <div class="lcd-content relative z-10">
+                                    <div class="text-[9px] font-mono-tech text-[#b4f056] flex justify-between">
+                                        <span id="cdStateLabel">STOPPED</span>
+                                        <span id="cdTrackNum">TRK 01/03</span>
+                                    </div>
+                                    <div class="font-lcd text-base truncate text-[#e8ff9c]" id="cdTrackTitle">
+                                        ♪ Midnight Coding Beat
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Transport Buttons & Volume -->
+                            <div class="flex items-center justify-between gap-1.5 mb-2">
+                                <button onclick="prevTrack()" class="hw-btn px-2 py-1 text-[10px] font-pixel" title="Previous">⏮</button>
+                                <button onclick="toggleCdPlay()" id="cdPlayBtn" class="pink-btn flex-1 py-1 text-[10px] font-pixel text-center">▶ PLAY</button>
+                                <button onclick="nextTrack()" class="hw-btn px-2 py-1 text-[10px] font-pixel" title="Next">⏭</button>
+                            </div>
+                            <div class="flex items-center gap-2 px-1">
+                                <span class="text-[9px] font-pixel text-slate-600">VOL</span>
+                                <input type="range" id="cdVolumeSlider" min="0" max="100" value="45" class="y2k-slider" oninput="updateCdVolume(this.value)">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- RIGHT MAIN DISPLAY SCREEN (Cream Paper Display) -->
+                    
+
+                </div>
+            </section>
+
+            <!-- =========================================================
+                 COLUMN 3: RIGHT SIDEBAR GADGET WIDGETS (3 Mini Gadgets + Sticker)
+                 ========================================================= -->
+            <aside class="lg:col-span-2 flex flex-col gap-4 items-center">
+                
+                <!-- WIDGET 1: Mini Handheld Screen (PROMO / INFO) -->
+                <div class="y2k-chassis w-full max-w-[230px] p-2.5">
+                    <div class="flex justify-between items-center text-[9px] font-pixel text-slate-600 mb-1.5 px-1">
+                        <span>MALA PAGER</span>
+                        <span class="w-2 h-2 rounded-full bg-[#ff2a85] led-blink"></span>
+                    </div>
+                    <div class="lcd-screen p-3 text-center">
+                        <div class="lcd-content relative z-10">
+                            <div class="text-[10px] font-pixel text-[#e8ff9c] tracking-wider mb-1">
+                                TARIF PELAJAR!
+                            </div>
+                            <div class="font-pixel text-base text-white drop-shadow mb-1">
+                                MULAI 5K
+                            </div>
+                            <div class="text-[#ff5ca1] text-lg leading-none my-1">✳ ★ ✳</div>
+                            <p class="font-lcd text-sm text-[#d6ff7f] leading-tight">
+                                Bisa nego & custom sesuai tingkat kesulitan tugasmu!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- WIDGET 2: Interactive Mini Calendar / Deadline Picker -->
+                <div class="y2k-chassis w-full max-w-[230px] p-2.5">
+                    <div class="flex justify-between items-center text-[9px] font-pixel text-slate-700 mb-1.5 px-1">
+                        <span>DEADLINE PICKER</span>
+                        <span class="text-[#e61e73]">NOV 2026</span>
+                    </div>
+                    <div class="lcd-screen py-1 px-2 mb-2 text-center">
+                        <div class="lcd-content relative z-10 font-pixel text-[11px] text-[#e8ff9c]" id="calendarSelectedLabel">
+                            TARGET: 18 NOV 2026
+                        </div>
+                    </div>
+                    <!-- Days Header -->
+                    <div class="grid grid-cols-7 gap-0.5 text-center text-[8px] font-pixel text-slate-500 mb-1">
+                        <span>M</span><span>S</span><span>S</span><span>R</span><span>K</span><span>J</span><span class="text-[#e61e73]">S</span>
+                    </div>
+                    <!-- Calendar Grid (Nov 2026 starts on Sunday) -->
+                    <div id="miniCalendarGrid" class="grid grid-cols-7 gap-1 text-center">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- TILTED PINK STICKER: FAST RESPON! ★ -->
+                <button onclick="openQuickChatModal()" class="pink-sticker w-full max-w-[215px] py-2.5 px-3 rounded-md border border-white/60 text-left relative">
+                    <div class="flex justify-between items-center">
+                        <span class="font-pixel text-xs font-bold tracking-wide">FAST RESPON!</span>
+                        <span class="text-base leading-none">★</span>
+                    </div>
+                    <div class="text-[10px] font-mono-tech text-pink-100 mt-0.5">
+                        Kirim saran & masukan →
+                    </div>
+                </button>
+
+                <!-- WIDGET 3: System Monitor / Live Stats -->
+                <div class="y2k-chassis w-full max-w-[230px] p-2.5">
+                    <div class="flex justify-between items-center text-[9px] font-pixel text-slate-600 mb-1.5 px-1">
+                        <span>SYS MONITOR</span>
+                        <span>24/7</span>
+                    </div>
+                    <div class="lcd-screen p-2.5">
+                        <div class="lcd-content relative z-10 space-y-1.5 font-lcd text-sm">
+                            <div class="flex justify-between border-b border-[#8ac926]/30 pb-0.5">
+                                <span>TUGAS SELESAI:</span>
+                                <span class="font-bold text-white" id="statCompletedCount">148+</span>
+                            </div>
+                            <div class="flex justify-between border-b border-[#8ac926]/30 pb-0.5">
+                                <span>KEPUASAN:</span>
+                                <span class="font-bold text-[#e8ff9c]">99.8%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>RATA-RATA:</span>
+                                <span class="font-bold text-white">&lt; 12 JAM</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </aside>
+        </div>
+    </main>
+
+    <!-- =========================================================
+         CUSTOM Y2K NOTIFICATION TOAST & QUICK CHAT MODAL
+         ========================================================= -->
+    <div id="mainPaperScreen" class="hidden fixed inset-0 z-40 paper-screen !rounded-none p-4 sm:p-6 overflow-y-auto paper-scroll"><div class="max-w-3xl mx-auto min-h-full flex flex-col justify-between"><div class="sticky top-0 z-10 -mt-1 mb-3"><button onclick="goHome()" class="hw-btn px-3 py-1.5 text-[11px] font-pixel text-slate-800">◀ KEMBALI KE MENU</button></div>
+                        
+                        <!-- Top Paper Header & OPEN 24/7 Stamp -->
+                        <div class="flex justify-between items-start border-b-2 border-dashed border-[#c7c3b2] pb-3 mb-4">
+                            <div>
+                                <div class="text-[10px] font-mono-tech uppercase tracking-widest text-slate-500" id="screenBreadcrumb">
+                                    CHANNEL 01 // KATALOG JASA TUGAS SEKOLAH
+                                </div>
+                                <h2 class="font-pixel text-xl sm:text-2xl text-slate-800 leading-tight mt-0.5" id="screenMainTitle">
+                                    OPEN JOKI <span class="text-[#e61e73]">TUGAS SEKOLAH</span>
+                                </h2>
+                                <p class="text-xs text-slate-600 mt-1" id="screenSubtitle">
+                                    Harga ramah kantong pelajar mulai Rp 5.000 (5k) hingga custom sesuai tingkat kesulitan!
+                                </p>
+                            </div>
+
+                            <!-- Circular Retro Stamp OPEN 24/7 -->
+                            <div class="shrink-0 w-14 h-14 rounded-full border-2 border-[#ff2a85] text-[#ff2a85] flex flex-col items-center justify-center text-center transform rotate-12 bg-white/60 shadow-xs">
+                                <span class="font-pixel text-[9px] leading-none font-bold">MULAI</span>
+                                <span class="font-pixel text-[11px] leading-tight font-bold">5K+</span>
+                                <span class="text-[7px] font-mono-tech">24/7!</span>
+                            </div>
+                        </div>
+
+                        <!-- DYNAMIC VIEW CONTAINER -->
+                        <div id="dynamicScreenContent" class="flex-1">
+                            <!-- Content injected dynamically by JS -->
+                        </div>
+
+                        <!-- Bottom Paper Footer Telemetry -->
+                        <div class="mt-5 pt-2.5 border-t border-[#d6d2c2] flex flex-wrap justify-between items-center text-[10px] font-mono-tech text-slate-500">
+                            <span>JOYKIY-OS // PRIVASI PELAJAR 100% AMAN</span>
+                            <span class="text-[#e61e73] font-bold">★ HARGA MULAI 5K • GARANSI REVISI</span>
+                        </div>
+                    </div></div></div>
+    <div id="y2kToast" class="fixed bottom-5 right-5 z-50 hidden transform transition-all duration-300">
+        <div class="y2k-chassis p-3 max-w-xs border-2 border-[#ff2a85]">
+            <div class="flex items-center justify-between gap-3 mb-1">
+                <span class="font-pixel text-[10px] text-[#e61e73]">★ SYSTEM MESSAGE</span>
+                <button onclick="hideToast()" class="text-xs font-bold text-slate-600 hover:text-black cursor-pointer">✕</button>
+            </div>
+            <p id="y2kToastMsg" class="text-xs font-medium text-slate-800"></p>
+        </div>
+    </div>
+
+    <!-- Quick Chat / Konsultasi Modal -->
+    <div id="quickChatModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="y2k-chassis w-full max-w-md p-4">
+            <div class="flex justify-between items-center border-b border-slate-400 pb-2 mb-3">
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#9be828]"></span>
+                    <h3 class="font-pixel text-xs font-bold text-slate-800">DIRECT PAGER // MALA TUKANG JOYKIY</h3>
+                </div>
+                <button onclick="closeQuickChatModal()" class="hw-btn px-2 py-0.5 text-xs font-pixel">✕</button>
+            </div>
+
+            <div class="lcd-screen p-3 h-48 overflow-y-auto mb-3 space-y-2" id="chatHistoryBox">
+                <div class="lcd-content relative z-10 text-xs font-mono-tech">
+                    <span class="text-[#ff7eb5] font-bold">[MALA]:</span> Halo! Punya saran, masukan, atau pertanyaan? Tulis di sini, langsung masuk ke DM IG Mala ★
+                </div>
+            </div>
+
+            <form onsubmit="sendQuickChat(event)" class="flex gap-2">
+                <input type="text" id="quickChatInput" placeholder="Tulis saran / masukan / pertanyaan..." required
+                    class="flex-1 px-3 py-2 text-xs rounded border border-slate-400 bg-[#f4f2e8] focus:outline-none focus:border-[#ff2a85]">
+                <button type="submit" class="pink-btn px-4 py-2 font-pixel text-xs">KIRIM</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         JAVASCRIPT LOGIC: AUDIO SYNTH, OSCILLOSCOPE, STATE & CRUD
+         ========================================================= -->
+    <script>
+        // --- 1. DATA & STATE MANAGEMENT ---
+        const CATEGORIES=[['MAPEL','TUGAS MAPEL'],['DATA','MAKALAH & DATA'],['WEB','CODING & WEB'],['DESAIN','DESAIN & PPT'],['VIDEO','VIDEO & EDITING']];
+        const _s=(id,category,title,tag,max,estTime,desc,deliverables)=>({id,category,categoryLabel:CATEGORIES.find(c=>c[0]===category)[1],title,tag,basePrice:5000,priceRange:`Rp 5.000 – Rp ${max}+`,estTime,desc,deliverables});
+        const SERVICES_DATA=[
+            _s('srv-mapel','MAPEL','Tugas Harian / LKS / Rangkuman','MULAI 5K','35.000','1 - 12 Jam','Matematika, B.Indonesia/Inggris, IPA/IPS, Sejarah, PKN, rangkuman dan soal LKS.',['Jawaban + Langkah','Ketik Rapi / Tulis','Bisa Nego']),
+            _s('srv-esai','MAPEL','Esai, Cerpen, Puisi & Karya Tulis','POPULER','50.000','3 - 24 Jam','Esai, cerpen, puisi, resensi, teks eksposisi dan karya tulis lainnya.',['Orisinal','Revisi Gratis','Format Rapi']),
+            _s('srv-makalah','DATA','Makalah & Paper','POPULER','120.000','1 - 3 Hari','Makalah sekolah/kuliah lengkap dengan daftar pustaka.',['Format Rapi (DOCX/PDF)','Daftar Pustaka','Revisi']),
+            _s('srv-laporan','DATA','Laporan Praktikum / PKL / Proposal','CUSTOM','150.000','1 - 3 Hari','Laporan praktikum, PKL/PKK, proposal kegiatan dan karya ilmiah remaja.',['Sesuai Format Sekolah','Bisa Revisi','File Editable']),
+            _s('srv-data','DATA','Olah Data Excel / Spreadsheet','FAST!','80.000','2 - 12 Jam','Rekap data, rumus Excel, tabel, grafik, dan analisis sederhana.',['File XLSX','Rumus Otomatis','Grafik Siap Pakai']),
+            _s('srv-web','WEB','Website Tugas / RPL / Landing Page','CUSTOM','250.000','1 - 3 Hari','Website tugas sekolah, profil kelas/organisasi, portofolio, web sederhana (HTML, CSS, JS, PHP).',['Source Code Lengkap','Responsif HP & Laptop','Cara Menjalankan']),
+            _s('srv-coding','WEB','Coding Tugas & Fix Bug (Python/Java/C++/PHP)','NEW','150.000','2 - 24 Jam','Tugas pemrograman, algoritma, database, dan perbaikan error kode.',['Kode + Komentar','Penjelasan Singkat','Bisa Revisi']),
+            _s('srv-ppt','DESAIN','PPT Estetik & Kliping Digital','ESTETIK','75.000','3 - 24 Jam','Slide PowerPoint/Canva, mind map digital, mading digital dan tugas kreatif.',['Template Estetik','File Editable','Revisi Teks/Warna']),
+            _s('srv-desain','DESAIN','Poster, Infografis, Banner & Pamflet','FAST!','80.000','2 - 12 Jam','Poster edukasi, infografis, banner OSIS/ekskul, pamflet lomba, twibbon, konten feed.',['PNG/JPG HD','PDF Siap Cetak','File Mentah']),
+            _s('srv-logo','DESAIN','Logo, CV & Sertifikat','NEW','60.000','2 - 24 Jam','Logo kelas/ekskul/usaha, CV kreatif, sertifikat dan undangan digital.',['PNG Transparan','File Editable','Revisi']),
+            _s('srv-video','VIDEO','Edit Video Tugas / Vlog / Reels','POPULER','120.000','6 - 24 Jam','Edit video tugas, presentasi, subtitle, transisi, BGM dan efek suara.',['MP4 1080p','Subtitle & Transisi','CapCut/Premiere'])
+        ];
+        function buildCategoryButtons(){
+            document.getElementById('categoryFilterGroup').innerHTML=`<button onclick="filterCategory('ALL')" data-cat="ALL" class="cat-btn pink-btn text-left px-2.5 py-1 text-[10px] font-pixel flex justify-between items-center"><span>ALL SERVICES</span><span>★</span></button>`+CATEGORIES.map(([k,l],i)=>`<button onclick="filterCategory('${k}')" data-cat="${k}" class="cat-btn hw-btn text-left px-2.5 py-1 text-[10px] font-pixel text-slate-700 flex justify-between items-center"><span>${l}</span><span class="text-[9px] text-slate-500">0${i+1}</span></button>`).join('');
+        }
+
+        const PORTFOLIO_DATA = [
+            {
+                title: 'Video Tugas Dokumenter & Presentasi Sejarah',
+                category: 'VIDEO',
+                tech: 'CapCut Pro + Motion Subtitle • 1080p',
+                client: 'Siswa SMA Kelas XI',
+                summary: 'Editing video tugas kelompok berdurasi 5 menit lengkap dengan animasi teks, transisi halus, dan penyesuaian audio narasi.'
+            },
+            {
+                title: 'Website Profil Kelas & Galeri Kegiatan RPL',
+                category: 'WEB',
+                tech: 'HTML5 + Tailwind CSS + JavaScript',
+                client: 'Siswa SMK RPL',
+                summary: 'Tugas praktik pemrograman web membuat halaman profil kelas interaktif dengan daftar jadwal piket dan galeri foto.'
+            },
+            {
+                title: 'Poster Infografis Edukasi Lingkungan Hidup',
+                category: 'DESAIN',
+                tech: 'Canva Pro + Illustrator • A3 Print Ready',
+                client: 'Tugas Mapel Biologi / Geografi',
+                summary: 'Desain infografis penuh warna dengan ilustrasi ikon custom dan tata letak informasi yang mudah dibaca saat presentasi.'
+            },
+            {
+                title: 'Rangkuman & Pembahasan 30 Soal Matematika Wajib',
+                category: 'MAPEL',
+                tech: 'Dokumen PDF Rapi + Langkah Penyelesaian',
+                client: 'Siswa SMA Kelas X',
+                summary: 'Penyelesaian tugas harian lengkap dengan rumus dan langkah pengerjaan runtut sehingga mudah dipelajari kembali.'
+            },
+            {
+                title: 'Slide PPT Kreatif Kewirausahaan (PKWU)',
+                category: 'MAPEL',
+                tech: 'PowerPoint Interactive + Canva Deck',
+                client: 'Kelompok Tugas PKWU',
+                summary: '14 slide presentasi rencana bisnis pelajar dengan tema visual retro-modern dan grafik proyeksi sederhana.'
+            },
+            {
+                title: 'Reels / TikTok Kampanye Anti-Bullying Sekolah',
+                category: 'VIDEO',
+                tech: 'Video Vertikal 9:16 + Color Grading',
+                client: 'Tugas Proyek P5 Sekolah',
+                summary: 'Video kampanye kreatif berdurasi 60 detik dengan efek sinematik ringan dan sinkronisasi musik latar.'
+            }
+        ];
+
+        // Default initial orders stored in localStorage
+        const DEFAULT_ORDERS = [
+            {
+                code: 'JKY-5021',
+                clientName: 'Alya Rahma (XI IPA 2)',
+                contactInfo: 'WA: 0812-3456-XXXX',
+                serviceId: 'srv-video',
+                serviceName: 'Tugas Video & Editing',
+                title: 'Edit Video Tugas Presentasi Bahasa Inggris (3 Menit)',
+                deadlineType: 'normal',
+                targetDate: '17 Nov 2026',
+                fileName: 'klip_rekaman_kelompok.zip',
+                totalPrice: 25000,
+                statusIndex: 1, // 0: Menunggu Konfirmasi, 1: Dikerjakan, 2: Revisi, 3: Selesai
+                resultFile: '',
+                createdAt: '15 Nov 2026, 09:30'
+            },
+            {
+                code: 'JKY-1108',
+                clientName: 'Bima Saputra (SMK RPL)',
+                contactInfo: 'IG: @bima.dev',
+                serviceId: 'srv-web',
+                serviceName: 'Website Tugas Sekolah / RPL',
+                title: 'Web Portofolio Sederhana HTML CSS JS',
+                deadlineType: 'kilat',
+                targetDate: '16 Nov 2026',
+                fileName: 'instruksi_guru_rpl.pdf',
+                totalPrice: 45000,
+                statusIndex: 3,
+                resultFile: 'WebPortofolio_Bima_MalaJoykiy.zip',
+                createdAt: '14 Nov 2026, 18:15'
+            }
+        ];
+
+        const ORDER_STEPS = [
+            'Menunggu Konfirmasi',
+            'Sedang Dikerjakan',
+            'Tahap Revisi',
+            'Selesai & Siap Unduh'
+        ];
+
+        let state = {
+            poweredOn: true,
+            sfxEnabled: true,
+            activeChannel: 'home',
+            activeCategory: 'ALL',
+            selectedServiceId: 'srv-mapel',
+            selectedDate: '18 Nov 2026',
+            mood: 'ready',
+            selectedOrderCode: 'JKY-5021',
+            lastCreatedReceipt: null,
+            orders: JSON.parse(localStorage.getItem('mala_joykiy_school_orders')) || DEFAULT_ORDERS
+        };
+
+        function saveOrders() {
+            localStorage.setItem('mala_joykiy_school_orders', JSON.stringify(state.orders));
+            const countEl = document.getElementById('statCompletedCount');
+            if (countEl) {
+                countEl.textContent = (146 + state.orders.length) + '+';
+            }
+        }
+
+        
+        // --- 2. MUSIK: taruh file mp3 di folder /music pada repo GitHub ---
+        const CD_TRACKS=[
+            {title:'♪ Lagu 1', src:'music/lagu1.mp3'},
+            {title:'♪ Lagu 2', src:'music/lagu2.mp3'},
+            {title:'♪ Lagu 3', src:'music/lagu3.mp3'}
+        ];
+        let audioCtx=null, cdPlaying=false, cdInterval=null, currentTrackIdx=0, cdVolume=45;
+        const cdAudio=new Audio(); cdAudio.volume=0.45; cdAudio.onended=()=>changeTrack(1);
+        function ensureAudioCtx(){ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended') audioCtx.resume(); }
+        function setCdUI(on){ document.getElementById('cdDiscEl').classList.toggle('cd-spin',on); document.getElementById('cdPlayBtn').textContent=on?'⏸ PAUSE':'▶ PLAY'; document.getElementById('cdStateLabel').textContent=on?'PLAYING':'PAUSED'; }
+        function toggleCdPlay(){
+            if(!state.poweredOn) return; playClickSfx(750);
+            if(cdPlaying){ cdAudio.pause(); cdPlaying=false; setCdUI(false); return; }
+            const t=CD_TRACKS[currentTrackIdx];
+            if(!cdAudio.src.endsWith(t.src)) cdAudio.src=t.src;
+            cdAudio.play().then(()=>{cdPlaying=true;setCdUI(true);}).catch(()=>showToast('File musik belum ada: '+t.src));
+        }
+        function changeTrack(d){ currentTrackIdx=(currentTrackIdx+d+CD_TRACKS.length)%CD_TRACKS.length; updateCdDisplay(); if(cdPlaying){ cdAudio.src=CD_TRACKS[currentTrackIdx].src; cdAudio.play().catch(()=>{}); } }
+        function nextTrack(){ playClickSfx(700); changeTrack(1); }
+        function prevTrack(){ playClickSfx(620); changeTrack(-1); }
+
+        
+        // --- KIRIM ORDER & SARAN KE DM INSTAGRAM ---
+        const BACKEND_URL=''; // isi URL backend setelah deploy, mis. 'https://joykiy-backend.onrender.com'
+        const IG_USERNAME='spiectrum_';
+        const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+        function orderFormat(o){ return `JOKI ${o.code} • Rp ${o.totalPrice.toLocaleString('id-ID')}\n${o.clientName} (${o.contactInfo})\n${o.serviceName}: ${o.title}\nDeadline ${o.targetDate}`; }
+        async function postBackend(path,body){ try{ const r=await fetch(BACKEND_URL+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); return r.ok; }catch(e){ return false; } }
+        async function sendOrderToIG(o){
+            if(!BACKEND_URL){ openIG(o); return; }
+            const ok=await postBackend('/api/order',{text:orderFormat(o)});
+            showToast(ok?'Order terkirim ke DM IG Mala ✓':'Server off. Pakai tombol KIRIM KE DM IG ya');
+        }
+        function openIG(o){ o=o||state.lastCreatedReceipt; if(!o) return; window.open('https://ig.me/m/'+IG_USERNAME,'_blank'); navigator.clipboard&&navigator.clipboard.writeText(orderFormat(o)).then(()=>showToast('Format disalin, tinggal paste di DM!')); }
+
+        
+        // --- ROUTER HALAMAN ---
+        const PAGES=['home','order','tracker','portfolio','admin'];
+        function switchChannel(ch){ if(location.hash.slice(1)===ch) openPage(ch); else location.hash=ch; }
+        function openPage(ch){ _switchChannelUI(ch); document.getElementById('mainPaperScreen').classList.remove('hidden'); document.body.style.overflow='hidden'; }
+        function closePage(){ document.getElementById('mainPaperScreen').classList.add('hidden'); document.body.style.overflow=''; window.scrollTo(0,0); }
+        function goHome(){ playClickSfx(640); history.pushState(null,'',location.pathname+location.search); closePage(); }
+        function route(){ const h=location.hash.slice(1); PAGES.includes(h)?openPage(h):closePage(); }
+        window.addEventListener('hashchange',route); window.addEventListener('load',route);
+
+        function playClickSfx(freq = 680) {
+            if (!state.sfxEnabled || !state.poweredOn) return;
+            try {
+                ensureAudioCtx();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(140, audioCtx.currentTime + 0.045);
+
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.045);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.05);
+            } catch (e) {}
+        }
+
+        function toggleAudioMute() {
+            state.sfxEnabled = !state.sfxEnabled;
+            document.getElementById('sfxStatusText').textContent = state.sfxEnabled ? 'ON' : 'OFF';
+            if (state.sfxEnabled) playClickSfx(820);
+        }
+
+        function updateCdDisplay() {
+            document.getElementById('cdTrackNum').textContent = `TRK 0${currentTrackIdx + 1}/0${CD_TRACKS.length}`;
+            document.getElementById('cdTrackTitle').textContent = CD_TRACKS[currentTrackIdx].title;
+        }
+
+        function updateCdVolume(val) {
+            cdVolume = Number(val); cdAudio.volume = cdVolume / 100;
+        }
+
+        // --- 3. OSCILLOSCOPE WAVE & HARDWARE CONTROLS ---
+        let waveSpeed = 0.05;
+        let waveAmp = 18;
+        let waveFreq = 0.035;
+        let wavePhase = 0;
+
+        function updateWaveControls() {
+            const urg = Number(document.getElementById('urgencySlider').value);
+            const comp = Number(document.getElementById('complexitySlider').value);
+
+            document.getElementById('urgencyValText').textContent = urg + '%';
+            document.getElementById('complexityValText').textContent = comp + '%';
+
+            waveSpeed = 0.02 + (urg / 100) * 0.14;
+            waveAmp = 8 + (comp / 100) * 24;
+            waveFreq = 0.02 + (comp / 100) * 0.05;
+
+            const mhz = (88 + (urg * 0.2)).toFixed(1);
+            const modeLabel = urg > 75 ? 'KILAT' : urg > 40 ? 'NORMAL' : 'SANTAI';
+            document.getElementById('waveHzLabel').textContent = `${mhz} MHz // ${modeLabel}`;
+            document.getElementById('speedReadout').textContent = modeLabel;
+
+            const est = 5000 + Math.round(((comp - 10) * 1500) + (urg > 70 ? 15000 : 0));
+            document.getElementById('estPriceReadout').textContent = 'Rp ' + est.toLocaleString('id-ID');
+        }
+
+        function initOscilloscope() {
+            const canvas = document.getElementById('oscilloscopeCanvas');
+            const ctx = canvas.getContext('2d');
+
+            function resizeCanvas() {
+                const rect = canvas.getBoundingClientRect();
+                canvas.width = rect.width || 320;
+                canvas.height = rect.height || 96;
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Subtle LCD Grid
+                ctx.strokeStyle = 'rgba(214, 255, 127, 0.16)';
+                ctx.lineWidth = 1;
+                for (let x = 0; x < canvas.width; x += 24) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, canvas.height);
+                    ctx.stroke();
+                }
+                for (let y = 0; y < canvas.height; y += 20) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(canvas.width, y);
+                    ctx.stroke();
+                }
+
+                if (state.poweredOn) {
+                    const midY = canvas.height / 2;
+                    ctx.beginPath();
+                    ctx.strokeStyle = '#e8ff9c';
+                    ctx.lineWidth = 2.4;
+                    ctx.shadowColor = '#9be828';
+                    ctx.shadowBlur = 8;
+
+                    for (let x = 0; x < canvas.width; x++) {
+                        const y = midY + Math.sin(x * waveFreq + wavePhase) * waveAmp * Math.sin(x / canvas.width * Math.PI);
+                        if (x === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                    }
+                    ctx.stroke();
+                    ctx.shadowBlur = 0;
+                    wavePhase += waveSpeed;
+                }
+                requestAnimationFrame(draw);
+            }
+            draw();
+        }
+
+        function setMalaMood(moodKey) {
+            if (!state.poweredOn) return;
+            playClickSfx(780);
+            state.mood = moodKey;
+
+            ['busy', 'chill', 'ready'].forEach(k => {
+                const el = document.getElementById('mood-' + k);
+                if (k === moodKey) el.classList.add('active');
+                else el.classList.remove('active');
+            });
+
+            const statusEl = document.getElementById('moodStatusText');
+            const badgeEl = document.getElementById('keychainStatusBadge');
+            const loadText = document.getElementById('workloadPercentText');
+            const loadBar = document.getElementById('workloadBar');
+
+            if (moodKey === 'ready') {
+                statusEl.textContent = 'READY! GAS ORDER TUGAS ★';
+                badgeEl.textContent = 'OPEN';
+                badgeEl.className = 'text-white bg-[#ff2a85] px-1.5 rounded';
+                loadText.textContent = '35% (LOWONG)';
+                loadBar.style.width = '35%';
+            } else if (moodKey === 'chill') {
+                statusEl.textContent = 'CHILL MODE // FREE KONSUL';
+                badgeEl.textContent = 'CHILL';
+                badgeEl.className = 'text-slate-900 bg-[#e8ff9c] px-1.5 rounded';
+                loadText.textContent = '55% (NORMAL)';
+                loadBar.style.width = '55%';
+            } else {
+                statusEl.textContent = 'FOKUS CODING // SLOT TERBATAS';
+                badgeEl.textContent = 'BUSY';
+                badgeEl.className = 'text-white bg-amber-600 px-1.5 rounded';
+                loadText.textContent = '82% (PADAT)';
+                loadBar.style.width = '82%';
+            }
+        }
+
+        let knobAngles = { 1: 0, 2: 45 };
+        function rotateKnob(id) {
+            playClickSfx(880);
+            knobAngles[id] = (knobAngles[id] + 45) % 360;
+            document.getElementById('knob' + id).style.transform = `rotate(${knobAngles[id]}deg)`;
+            wavePhase += 1.2;
+        }
+
+        function toggleConsolePower() {
+            state.poweredOn = !state.poweredOn;
+            const chassis = document.getElementById('mainConsoleChassis');
+            const led = document.getElementById('powerLed');
+
+            if (state.poweredOn) {
+                chassis.classList.remove('console-powered-off');
+                led.className = 'w-2.5 h-2.5 rounded-full bg-[#9be828] shadow-[0_0_8px_#9be828]';
+                playClickSfx(920);
+            } else {
+                chassis.classList.add('console-powered-off');
+                led.className = 'w-2.5 h-2.5 rounded-full bg-slate-600';
+                if (cdPlaying) toggleCdPlay();
+            }
+        }
+
+        // --- 4. TELEMETRY LED MATRIX & ANIMATED BARS ---
+        function initTelemetryWidgets() {
+            const matrix = document.getElementById('dotLedMatrix');
+            for (let i = 0; i < 30; i++) {
+                const dot = document.createElement('span');
+                dot.className = 'w-1.5 h-1.5 rounded-full bg-[#9be828] transition-opacity duration-300';
+                matrix.appendChild(dot);
+            }
+
+            const bars = document.getElementById('telemetryBars');
+            for (let i = 0; i < 16; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'flex-1 bg-[#d6ff7f] rounded-t-xs transition-all duration-300';
+                bar.style.height = (25 + Math.random() * 65) + '%';
+                bars.appendChild(bar);
+            }
+
+            setInterval(() => {
+                if (!state.poweredOn) return;
+                // Randomize LED dots
+                Array.from(matrix.children).forEach(dot => {
+                    dot.style.opacity = Math.random() > 0.35 ? '1' : '0.2';
+                });
+                // Randomize Telemetry Bars
+                Array.from(bars.children).forEach(bar => {
+                    bar.style.height = (18 + Math.random() * 78) + '%';
+                });
+                // Randomize Keychain Equalizer
+                const kBars = document.getElementById('keychainBars');
+                if (kBars) {
+                    Array.from(kBars.children).forEach(b => {
+                        b.style.height = (20 + Math.random() * 80) + '%';
+                    });
+                }
+            }, 650);
+        }
+
+        // --- 5. MINI CALENDAR WIDGET (NOVEMBER 2026) ---
+        function initMiniCalendar() {
+            const grid = document.getElementById('miniCalendarGrid');
+            grid.innerHTML = '';
+            const today = 15;
+            const selectedDay = parseInt(state.selectedDate.split(' ')[0], 10) || 18;
+
+            for (let day = 1; day <= 30; day++) {
+                const btn = document.createElement('button');
+                btn.textContent = day;
+                const isSelected = day === selectedDay;
+                const isToday = day === today;
+
+                btn.className = `py-0.5 text-[9px] font-mono-tech rounded transition cursor-pointer ${
+                    isSelected
+                        ? 'pink-btn font-bold'
+                        : isToday
+                        ? 'bg-[#9be828] text-slate-900 font-bold border border-slate-600'
+                        : 'hw-btn text-slate-700 hover:border-[#ff2a85]'
+                }`;
+
+                btn.onclick = () => {
+                    playClickSfx(720);
+                    state.selectedDate = `${day} Nov 2026`;
+                    document.getElementById('calendarSelectedLabel').textContent = `TARGET: ${day} NOV 2026`;
+                    initMiniCalendar();
+                    const deadlineInput = document.getElementById('orderTargetDate');
+                    if (deadlineInput) deadlineInput.value = state.selectedDate;
+                    showToast(`Tanggal target deadline dipilih: ${state.selectedDate}`);
+                };
+
+                grid.appendChild(btn);
+            }
+        }
+
+        // --- 6. NAVIGATION, CATEGORY FILTER & DYNAMIC SCREEN RENDERER ---
+        function triggerScreenTransition() {
+            const screenEl = document.getElementById('mainPaperScreen');
+            if (!screenEl) return;
+            screenEl.classList.remove('page-transition');
+            void screenEl.offsetWidth; // trigger reflow
+            screenEl.classList.add('page-transition');
+            screenEl.scrollTop = 0;
+        }
+
+        function _switchChannelUI(channelName) {
+            playClickSfx(740);
+            state.activeChannel = channelName;
+
+            const chMap = { home: '1', order: '2', tracker: '3', portfolio: '4', admin: '5' };
+            document.getElementById('activeChannelNum').textContent = chMap[channelName] || '1';
+
+            // Update Channel Buttons UI
+            document.querySelectorAll('.channel-btn').forEach(btn => {
+                const btnCh = btn.getAttribute('data-ch');
+                const isTarget = btnCh === channelName;
+                const badge = btn.querySelector('span:first-child');
+                if (isTarget) {
+                    btn.classList.add('bg-[#9be828]/25', 'border-[#d6ff7f]', 'text-white');
+                    btn.classList.remove('border-transparent', 'text-[#d6ff7f]', 'text-[#ff9ec7]');
+                    badge.className = 'pink-btn w-5 h-5 flex items-center justify-center text-[10px] shrink-0';
+                    badge.textContent = '▶';
+                } else {
+                    btn.classList.remove('bg-[#9be828]/25', 'border-[#d6ff7f]', 'text-white');
+                    btn.classList.add('border-transparent', btnCh === 'admin' ? 'text-[#ff9ec7]' : 'text-[#d6ff7f]');
+                    badge.className = 'hw-btn text-slate-800 w-5 h-5 flex items-center justify-center text-[10px] shrink-0';
+                    badge.textContent = '0' + chMap[btnCh];
+                }
+            });
+
+            triggerScreenTransition();
+            renderMainScreen();
+        }
+
+        function filterCategory(cat) {
+            playClickSfx(660);
+            state.activeCategory = cat;
+
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                const isCat = btn.getAttribute('data-cat') === cat;
+                if (isCat) {
+                    btn.className = 'cat-btn pink-btn text-left px-2.5 py-1 text-[10px] font-pixel flex justify-between items-center';
+                } else {
+                    btn.className = 'cat-btn hw-btn text-left px-2.5 py-1 text-[10px] font-pixel text-slate-700 flex justify-between items-center';
+                }
+            });
+
+            // Always navigate to Home / Layanan when clicking Category Filter
+            switchChannel('home');
+        }
+
+        function startOrderWithService(serviceId) {
+            state.selectedServiceId = serviceId;
+            state.lastCreatedReceipt = null;
+            switchChannel('order');
+        }
+
+        function renderMainScreen() {
+            const container = document.getElementById('dynamicScreenContent');
+            const breadcrumb = document.getElementById('screenBreadcrumb');
+            const title = document.getElementById('screenMainTitle');
+            const subtitle = document.getElementById('screenSubtitle');
+
+            // =========================================================================
+            // PAGE 01: HOME / LAYANAN (Clean Catalog Only - Starting from 5K to Custom)
+            // =========================================================================
+            if (state.activeChannel === 'home') {
+                breadcrumb.textContent = `CHANNEL 01 // KATALOG LAYANAN (${state.activeCategory})`;
+                title.innerHTML = `OPEN JOKI <span class="text-[#e61e73]">TUGAS SEKOLAH</span>`;
+                subtitle.textContent = 'Terima tugas mapel sekolah, video, editing, website, tugas creative & design grafis. Tarif mulai Rp 5.000 (5k) hingga custom!';
+
+                const filtered = state.activeCategory === 'ALL'
+                    ? SERVICES_DATA
+                    : SERVICES_DATA.filter(s => s.category === state.activeCategory);
+
+                container.innerHTML = `
+                    <!-- Welcome Highlight Strip -->
+                    <div class="mb-3.5 p-3 rounded-lg bg-[#233e07] text-[#d6ff7f] border border-[#7cb524] flex flex-wrap items-center justify-between gap-2 shadow-xs">
+                        <div>
+                            <div class="font-pixel text-[10px] text-[#ff7eb5]">★ HARGA PELAJAR & BISA NEGO</div>
+                            <div class="text-xs text-white mt-0.5">
+                                Mulai dari <strong>Rp 5.000 (5k)</strong> sampai berapa aja sesuai tingkat kesulitan & deadline!
+                            </div>
+                        </div>
+                        <button onclick="switchChannel('order')" class="pink-btn px-3 py-1.5 text-[10px] font-pixel shrink-0">
+                            LANGSUNG ORDER →
+                        </button>
+                    </div>
+
+                    <!-- Service Catalog Cards -->
+                    <div class="space-y-3">
+                        ${filtered.map(srv => `
+                            <div class="bg-white/90 border border-[#c7c3b2] hover:border-[#ff2a85] rounded-lg p-3.5 transition shadow-xs">
+                                <div class="flex flex-wrap justify-between items-start gap-2 mb-1.5">
+                                    <div>
+                                        <span class="inline-block px-2 py-0.5 text-[9px] font-pixel bg-[#233e07] text-[#d6ff7f] rounded mr-1.5">${srv.categoryLabel}</span>
+                                        <span class="inline-block px-2 py-0.5 text-[9px] font-pixel bg-pink-100 text-[#e61e73] border border-pink-300 rounded">${srv.tag}</span>
+                                        <h3 class="font-bold text-sm sm:text-base text-slate-800 mt-1">${srv.title}</h3>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-[9px] font-mono-tech text-slate-500">ESTIMASI TARIF</div>
+                                        <div class="font-pixel text-xs sm:text-sm font-bold text-[#e61e73]">${srv.priceRange}</div>
+                                        <div class="text-[10px] font-mono-tech text-slate-500">⏱ ${srv.estTime}</div>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-slate-600 leading-relaxed mb-2.5">${srv.desc}</p>
+                                <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-dashed border-[#dcd8c8]">
+                                    <div class="flex flex-wrap gap-1.5">
+                                        ${srv.deliverables.map(d => `<span class="text-[10px] bg-[#ece9dc] text-slate-700 px-2 py-0.5 rounded">✓ ${d}</span>`).join('')}
+                                    </div>
+                                    <button onclick="startOrderWithService('${srv.id}')" class="pink-btn px-3 py-1.5 text-[10px] font-pixel shrink-0">
+                                        PESAN JASA INI →
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } 
+            // =========================================================================
+            // PAGE 02: ORDER FORM (Dedicated Order & Flexible Price Estimator Page)
+            // =========================================================================
+            else if (state.activeChannel === 'order') {
+                breadcrumb.textContent = 'CHANNEL 02 // HALAMAN PEMESANAN JOKI TUGAS';
+                title.innerHTML = `FORMULIR <span class="text-[#e61e73]">ORDER TUGAS</span>`;
+                subtitle.textContent = 'Lengkapi detail tugas sekolahmu. Nominal harga bisa menyesuaikan tingkat kesulitan mulai Rp 5.000.';
+
+                // If an order was just submitted, show Digital Receipt Banner at the top
+                const receiptHtml = state.lastCreatedReceipt ? `
+                    <div class="mb-4 p-3.5 rounded-lg bg-[#233e07] border-2 border-[#9be828] text-[#e8ff9c] shadow">
+                        <div class="flex justify-between items-center border-b border-[#8ac926]/40 pb-1.5 mb-2">
+                            <span class="font-pixel text-xs text-white">★ STRUK ORDER BERHASIL DIBUAT!</span>
+                            <span class="px-2 py-0.5 bg-[#ff2a85] text-white font-pixel text-[10px] rounded">${state.lastCreatedReceipt.code}</span>
+                        </div>
+                        <p class="text-xs text-[#d6ff7f] mb-2.5">
+                            Simpan kode <strong>${state.lastCreatedReceipt.code}</strong> untuk melacak progres pengerjaan tugas <strong>"${state.lastCreatedReceipt.title}"</strong> (Total: <strong>Rp ${state.lastCreatedReceipt.totalPrice.toLocaleString('id-ID')}</strong>).
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" onclick="openIG()" class="pink-btn px-3 py-1.5 text-[10px] font-pixel">KIRIM KE DM IG →</button>
+                            <button type="button" onclick="switchChannel('tracker')" class="pink-btn px-3 py-1.5 text-[10px] font-pixel">
+                                CEK DI 03 TRACKER →
+                            </button>
+                            <button type="button" onclick="clearReceiptBanner()" class="hw-btn text-slate-800 px-3 py-1.5 text-[10px] font-pixel">
+                                BUAT ORDER LAGI
+                            </button>
+                        </div>
+                    </div>
+                ` : '';
+
+                container.innerHTML = `
+                    ${receiptHtml}
+                    <form id="orderSubmitForm" onsubmit="handleCreateOrder(event)" class="space-y-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-pixel text-slate-700 mb-1">NAMA & KELAS / SEKOLAH *</label>
+                                <input type="text" id="orderClientName" required placeholder="Contoh: Rina (XI IPA 1)"
+                                    class="w-full px-3 py-2 text-xs bg-white border border-[#b5b1a0] rounded focus:outline-none focus:border-[#ff2a85]">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-pixel text-slate-700 mb-1">KONTAK WA / INSTAGRAM *</label>
+                                <input type="text" id="orderContactInfo" required placeholder="Contoh: WA 0812xxx / @rina.ig"
+                                    class="w-full px-3 py-2 text-xs bg-white border border-[#b5b1a0] rounded focus:outline-none focus:border-[#ff2a85]">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-pixel text-slate-700 mb-1">JENIS TUGAS SEKOLAH *</label>
+                                <select id="orderServiceSelect" onchange="onServiceSelectionChange()"
+                                    class="w-full px-3 py-2 text-xs bg-white border border-[#b5b1a0] rounded focus:outline-none focus:border-[#ff2a85]">
+                                    ${SERVICES_DATA.map(s => `
+                                        <option value="${s.id}" ${s.id === state.selectedServiceId ? 'selected' : ''}>
+                                            ${s.title} (Mulai Rp ${s.basePrice.toLocaleString('id-ID')})
+                                        </option>
+                                    `).join('')}
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-pixel text-slate-700 mb-1">TINGKAT KESULITAN / BUDGET (RP)</label>
+                                <select id="orderDifficultyLevel" onchange="recalculateOrderPrice()"
+                                    class="w-full px-3 py-2 text-xs bg-white border border-[#b5b1a0] rounded focus:outline-none focus:border-[#ff2a85]">
+                                    <option value="ringan">Ringan / Simpel (Mulai 5k - 15k)</option>
+                                    <option value="sedang" selected>Sedang / Standar Tugas (+Rp 15.000)</option>
+                                    <option value="rumit">Kompleks / Banyak Halaman (+Rp 40.000)</option>
+                                    <option value="custom">Input Nominal Custom / Nego Sendiri</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Optional Custom Price Input -->
+                        <div id="customPriceWrapper" class="hidden p-2.5 bg-pink-50 border border-pink-300 rounded-lg">
+                            <label class="block text-[10px] font-pixel text-[#e61e73] mb-1">MASUKKAN NOMINAL DEAL / BUDGET (MINIMAL RP 5.000)</label>
+                            <input type="number" id="orderCustomBudget" min="5000" step="1000" value="20000" oninput="recalculateOrderPrice()"
+                                class="w-full px-3 py-1.5 text-xs font-mono-tech font-bold bg-white border border-[#ff2a85] rounded focus:outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] font-pixel text-slate-700 mb-1">JUDUL TUGAS / MATA PELAJARAN *</label>
+                            <input type="text" id="orderTitle" required placeholder="Contoh: Edit Video Tugas Sejarah / Rangkuman Biologi / Web RPL"
+                                class="w-full px-3 py-2 text-xs bg-white border border-[#b5b1a0] rounded focus:outline-none focus:border-[#ff2a85]">
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] font-pixel text-slate-700 mb-1">INSTRUKSI DETAIL DARI GURU *</label>
+                            <textarea id="orderDesc" rows="2" required placeholder="Tuliskan aturan pengerjaan, durasi video, jumlah soal/slide, atau format file..."
+                                class="w-full px-3 py-2 text-xs bg-white border border-[#b5b1a0] rounded focus:outline-none focus:border-[#ff2a85]"></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-pixel text-slate-700 mb-1">DEADLINE SPEED</label>
+                                <select id="orderDeadlineSpeed" onchange="recalculateOrderPrice()"
+                                    class="w-full px-2.5 py-2 text-xs bg-white border border-[#b5b1a0] rounded focus:outline-none focus:border-[#ff2a85]">
+                                    <option value="santai" selected>Reguler (> 24 Jam) +Rp 0</option>
+                                    <option value="kilat">Kilat / Mepet (< 12 Jam) +Rp 10rb</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-pixel text-slate-700 mb-1">TANGGAL KUMPUL</label>
+                                <input type="text" id="orderTargetDate" value="${state.selectedDate}"
+                                    class="w-full px-2.5 py-2 text-xs bg-white border border-[#b5b1a0] rounded focus:outline-none focus:border-[#ff2a85]">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-pixel text-slate-700 mb-1">KODE PROMO</label>
+                                <input type="text" id="orderPromoCode" oninput="recalculateOrderPrice()" placeholder="JOYKIY15"
+                                    class="w-full px-2.5 py-2 text-xs uppercase bg-white border border-[#b5b1a0] rounded focus:outline-none focus:border-[#ff2a85]">
+                            </div>
+                        </div>
+
+                        <!-- Simulated File Attachment -->
+                        <div class="p-2.5 bg-white/85 border border-dashed border-[#9c9888] rounded-lg flex flex-wrap items-center justify-between gap-2">
+                            <div class="text-xs">
+                                <span class="font-pixel text-[10px] text-slate-700 block">LAMPIRKAN FILE SOAL / BAHAN VIDEO / MATERI</span>
+                                <span class="text-[11px] text-slate-500" id="attachedFileLabel">Belum ada file dipilih (opsional)</span>
+                            </div>
+                            <label class="hw-btn px-3 py-1.5 text-[10px] font-pixel text-slate-800 cursor-pointer">
+                                + PILIH FILE
+                                <input type="file" class="hidden" onchange="handleFileSelect(this)">
+                            </label>
+                        </div>
+
+                        <!-- Real-time LCD Price Calculator Box -->
+                        <div class="lcd-screen p-3 flex flex-wrap justify-between items-center gap-2">
+                            <div class="lcd-content relative z-10">
+                                <div class="text-[10px] font-pixel text-[#b4f056]">ESTIMASI BIAYA (MULAI RP 5.000)</div>
+                                <div class="font-pixel text-lg sm:text-xl text-white" id="calculatedOrderPrice">Rp 20.000</div>
+                                <div class="text-[10px] font-lcd text-[#d6ff7f]" id="priceBreakdownText">Base Rp 5.000 + Tingkat Sedang Rp 15.000</div>
+                            </div>
+                            <button type="submit" class="pink-btn relative z-10 px-4 py-2.5 font-pixel text-xs">
+                                KIRIM PESANAN ★
+                            </button>
+                        </div>
+                    </form>
+                `;
+                recalculateOrderPrice();
+            } 
+            // =========================================================================
+            // PAGE 03: TRACKER (Dedicated Order Status & Result Download Page)
+            // =========================================================================
+            else if (state.activeChannel === 'tracker') {
+                breadcrumb.textContent = 'CHANNEL 03 // HALAMAN PELACAKAN PESANAN';
+                title.innerHTML = `LACAK STATUS <span class="text-[#e61e73]">TUGASMU</span>`;
+                subtitle.textContent = 'Masukkan atau pilih Kode Order untuk melihat progres pengerjaan tugas dan mengunduh hasilnya.';
+
+                const activeOrder = state.orders.find(o => o.code === state.selectedOrderCode) || state.orders[0];
+
+                container.innerHTML = `
+                    <!-- Search & Select Order Code Bar -->
+                    <div class="bg-[#e8e5d5] p-3 rounded-lg border border-[#c7c3b2] mb-3.5 space-y-2">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span class="text-[10px] font-pixel text-slate-700">PILIH ANTREAN ORDER AKTIF:</span>
+                            <select onchange="selectTrackedOrder(this.value)" class="flex-1 min-w-[200px] px-2.5 py-1.5 text-xs font-mono-tech font-bold bg-white border border-slate-400 rounded">
+                                ${state.orders.map(o => `
+                                    <option value="${o.code}" ${activeOrder && o.code === activeOrder.code ? 'selected' : ''}>
+                                        [${o.code}] ${o.clientName} — ${o.serviceName}
+                                    </option>
+                                `).join('')}
+                            </select>
+                        </div>
+                        <form onsubmit="searchOrderByCode(event)" class="flex gap-2">
+                            <input type="text" id="trackCodeSearchInput" placeholder="Atau ketik Kode Order (contoh: JKY-5021)..."
+                                class="flex-1 px-2.5 py-1.5 text-xs font-mono-tech uppercase bg-white border border-slate-400 rounded focus:outline-none focus:border-[#ff2a85]">
+                            <button type="submit" class="hw-btn px-3 py-1.5 text-[10px] font-pixel text-slate-800">
+                                CARI KODE
+                            </button>
+                        </form>
+                    </div>
+
+                    ${activeOrder ? `
+                        <div class="bg-white/95 border border-[#c7c3b2] rounded-lg p-4 shadow-xs space-y-3.5">
+                            <div class="flex flex-wrap justify-between items-start gap-2 border-b border-dashed border-[#dcd8c8] pb-2.5">
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="px-2 py-0.5 bg-[#ff2a85] text-white font-pixel text-[10px] rounded">${activeOrder.code}</span>
+                                        <span class="text-[10px] font-mono-tech text-slate-500">Masuk: ${activeOrder.createdAt}</span>
+                                    </div>
+                                    <h3 class="font-bold text-base text-slate-800 mt-1">${activeOrder.title}</h3>
+                                    <p class="text-xs text-slate-600">Pemesan: <strong>${activeOrder.clientName}</strong> • Kategori: ${activeOrder.serviceName}</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-pixel text-sm font-bold text-[#e61e73]">Rp ${activeOrder.totalPrice.toLocaleString('id-ID')}</div>
+                                    <div class="text-[10px] font-mono-tech text-slate-600">Target: ${activeOrder.targetDate}</div>
+                                </div>
+                            </div>
+
+                            <!-- 4-Step Progress Bar -->
+                            <div>
+                                <div class="text-[10px] font-pixel text-slate-600 mb-2">STATUS PENGERJAAN SAAT INI:</div>
+                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                    ${ORDER_STEPS.map((step, idx) => {
+                                        const done = idx <= activeOrder.statusIndex;
+                                        const current = idx === activeOrder.statusIndex;
+                                        return `
+                                            <div class="p-2.5 rounded border text-center transition ${
+                                                current 
+                                                    ? 'bg-[#233e07] border-[#9be828] text-[#e8ff9c] shadow-sm' 
+                                                    : done 
+                                                    ? 'bg-emerald-50 border-emerald-400 text-emerald-800' 
+                                                    : 'bg-slate-100 border-slate-300 text-slate-400'
+                                            }">
+                                                <div class="font-pixel text-[10px] mb-0.5">0${idx + 1}</div>
+                                                <div class="text-[11px] font-semibold leading-tight">${step}</div>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+
+                            <!-- File Lampiran & Hasil Akhir -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                                <div class="p-2.5 rounded bg-[#f4f2e8] border border-[#d6d2c2] text-xs">
+                                    <span class="font-pixel text-[9px] text-slate-500 block">FILE BAHAN / SOAL:</span>
+                                    <span class="font-mono-tech text-slate-800">📎 ${activeOrder.fileName || 'Instruksi teks'}</span>
+                                </div>
+                                <div class="p-2.5 rounded bg-[#f4f2e8] border border-[#d6d2c2] text-xs flex items-center justify-between gap-2">
+                                    <div class="min-w-0">
+                                        <span class="font-pixel text-[9px] text-slate-500 block">FILE HASIL JADI:</span>
+                                        <span class="font-mono-tech font-bold block truncate ${activeOrder.resultFile ? 'text-emerald-700' : 'text-slate-400'}">
+                                            ${activeOrder.resultFile ? '📦 ' + activeOrder.resultFile : 'Sedang diproses Mala...'}
+                                        </span>
+                                    </div>
+                                    ${activeOrder.resultFile ? `
+                                        <button onclick="simulateDownloadResult('${activeOrder.resultFile}')" class="pink-btn px-2.5 py-1.5 text-[9px] font-pixel shrink-0">
+                                            UNDUH
+                                        </button>
+                                    ` : ''}
+                                </div>
+                            </div>
+
+                            <div class="pt-2 flex justify-between items-center text-[10px] font-mono-tech text-slate-500">
+                                <span>Ingin ubah status sebagai Mala?</span>
+                                <button onclick="switchChannel('admin')" class="text-[#e61e73] font-bold hover:underline cursor-pointer">Buka 05 Joki Admin →</button>
+                            </div>
+                        </div>
+                    ` : ''}
+                `;
+            } 
+            // =========================================================================
+            // PAGE 04: PORTFOLIO (Dedicated Showcase of School Tasks & Works)
+            // =========================================================================
+            else if (state.activeChannel === 'portfolio') {
+                breadcrumb.textContent = 'CHANNEL 04 // GALERI HASIL GARAPAN TUGAS';
+                title.innerHTML = `PORTFOLIO <span class="text-[#e61e73]">MALA JOYKIY</span>`;
+                subtitle.textContent = 'Contoh hasil tugas sekolah yang pernah dikerjakan: Video Editing, Website, Poster, PPT Creative & Mapel.';
+
+                container.innerHTML = `
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        ${PORTFOLIO_DATA.map((item, idx) => `
+                            <div class="bg-white/95 border border-[#c7c3b2] rounded-lg p-3.5 flex flex-col justify-between shadow-xs hover:border-[#ff2a85] transition">
+                                <div>
+                                    <div class="lcd-screen p-2.5 mb-2.5">
+                                        <div class="lcd-content relative z-10 flex justify-between items-center">
+                                            <span class="font-pixel text-[10px] text-[#e8ff9c]">WORK #0${idx + 1} // ${item.category}</span>
+                                            <span class="text-[10px] font-mono-tech text-white">★ 5.0</span>
+                                        </div>
+                                        <div class="lcd-content relative z-10 font-lcd text-base text-white mt-1 truncate">
+                                            ${item.tech}
+                                        </div>
+                                    </div>
+                                    <h3 class="font-bold text-sm text-slate-800 mb-1">${item.title}</h3>
+                                    <p class="text-xs text-slate-600 leading-relaxed mb-2">${item.summary}</p>
+                                </div>
+                                <div class="pt-2 border-t border-dashed border-[#dcd8c8] flex justify-between items-center text-[10px] font-mono-tech text-slate-500">
+                                    <span>Klien: ${item.client}</span>
+                                    <button onclick="switchChannel('order')" class="text-[#e61e73] font-bold hover:underline cursor-pointer">Order Serupa →</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            // =========================================================================
+            // PAGE 05: JOKI ADMIN PANEL (Simulated Backend Order Manager for Mala)
+            // =========================================================================
+            else if (state.activeChannel === 'admin') {
+                breadcrumb.textContent = 'CHANNEL 05 // BACKEND DASHBOARD KHUSUS MALA';
+                title.innerHTML = `PANEL ADMIN <span class="text-[#e61e73]">JOKI MALA</span>`;
+                subtitle.textContent = 'Kelola semua pesanan masuk, atur harga kesepakatan, perbarui status progres, dan unggah file hasil.';
+
+                container.innerHTML = `
+                    <div class="space-y-3">
+                        ${state.orders.map(order => `
+                            <div class="bg-slate-900 text-slate-100 border-2 border-[#7cb524] rounded-lg p-3.5 shadow">
+                                <div class="flex flex-wrap justify-between items-start gap-2 border-b border-slate-700 pb-2 mb-2.5">
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="px-2 py-0.5 bg-[#ff2a85] text-white font-pixel text-[10px] rounded">${order.code}</span>
+                                            <span class="text-[10px] font-mono-tech text-[#9be828]">${order.serviceName}</span>
+                                        </div>
+                                        <h4 class="font-bold text-sm text-white mt-1">${order.title}</h4>
+                                        <div class="text-[11px] text-slate-400">Pemesan: ${order.clientName} (${order.contactInfo || '-'}) • Target: ${order.targetDate}</div>
+                                    </div>
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-[10px] font-mono-tech text-slate-400">Rp</span>
+                                        <input type="number" min="5000" step="1000" value="${order.totalPrice}"
+                                            onchange="adminUpdateOrderPrice('${order.code}', this.value)"
+                                            class="w-24 px-2 py-1 text-xs font-mono-tech font-bold bg-slate-800 border border-slate-600 rounded text-[#e8ff9c]">
+                                    </div>
+                                </div>
+
+                                <!-- Status Controls -->
+                                <div class="mb-2.5">
+                                    <div class="text-[9px] font-pixel text-slate-400 mb-1">UBAH STATUS PENGERJAAN:</div>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        ${ORDER_STEPS.map((st, idx) => `
+                                            <button onclick="adminUpdateOrderStatus('${order.code}', ${idx})" class="px-2 py-1 rounded text-[10px] font-pixel cursor-pointer ${
+                                                order.statusIndex === idx ? 'bg-[#9be828] text-slate-900 font-bold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                                            }">
+                                                0${idx + 1}. ${st.split(' ')[0]}
+                                            </button>
+                                        `).join('')}
+                                    </div>
+                                </div>
+
+                                <!-- Upload Result File Simulation -->
+                                <div class="flex flex-wrap gap-2">
+                                    <input type="text" id="adminFile_${order.code}" value="${order.resultFile || 'Hasil_' + order.code + '.zip'}"
+                                        class="flex-1 min-w-[180px] px-2.5 py-1 text-xs bg-slate-800 border border-slate-600 rounded text-[#d6ff7f] font-mono-tech">
+                                    <button onclick="adminUploadResult('${order.code}')" class="pink-btn px-3 py-1 text-[10px] font-pixel">
+                                        SIMPAN & KIRIM HASIL
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+        }
+
+        // --- 7. ORDER CALCULATION, CREATION & ADMIN ACTIONS ---
+        let tempAttachedFileName = '';
+
+        function clearReceiptBanner() {
+            state.lastCreatedReceipt = null;
+            renderMainScreen();
+        }
+
+        function onServiceSelectionChange() {
+            const srvSelect = document.getElementById('orderServiceSelect');
+            if (srvSelect) {
+                state.selectedServiceId = srvSelect.value;
+            }
+            recalculateOrderPrice();
+        }
+
+        function handleFileSelect(input) {
+            if (input.files && input.files[0]) {
+                tempAttachedFileName = input.files[0].name;
+                document.getElementById('attachedFileLabel').textContent = 'Terlampir: ' + tempAttachedFileName;
+                playClickSfx(800);
+            }
+        }
+
+        function recalculateOrderPrice() {
+            const srvSelect = document.getElementById('orderServiceSelect');
+            const diffSelect = document.getElementById('orderDifficultyLevel');
+            const speedSelect = document.getElementById('orderDeadlineSpeed');
+            const promoInput = document.getElementById('orderPromoCode');
+            const customWrapper = document.getElementById('customPriceWrapper');
+            const customInput = document.getElementById('orderCustomBudget');
+            if (!srvSelect || !diffSelect || !speedSelect) return 5000;
+
+            const srv = SERVICES_DATA.find(s => s.id === srvSelect.value) || SERVICES_DATA[0];
+            let price = srv.basePrice;
+            let notes = [`Base Rp ${srv.basePrice.toLocaleString('id-ID')}`];
+
+            if (diffSelect.value === 'custom') {
+                customWrapper.classList.remove('hidden');
+                price = Math.max(5000, Number(customInput.value) || 5000);
+                notes = [`Nominal Custom Deal Rp ${price.toLocaleString('id-ID')}`];
+            } else {
+                customWrapper.classList.add('hidden');
+                if (diffSelect.value === 'sedang') {
+                    price += 15000;
+                    notes.push('Tingkat Sedang +Rp 15.000');
+                } else if (diffSelect.value === 'rumit') {
+                    price += 40000;
+                    notes.push('Tingkat Kompleks +Rp 40.000');
+                }
+            }
+
+            if (speedSelect.value === 'kilat') {
+                price += 10000;
+                notes.push('Deadline Kilat +Rp 10.000');
+            }
+
+            if (promoInput && promoInput.value.trim().toUpperCase() === 'JOYKIY15') {
+                const disc = Math.round(price * 0.15);
+                price = Math.max(5000, price - disc);
+                notes.push(`Promo 15% (-Rp ${disc.toLocaleString('id-ID')})`);
+            }
+
+            document.getElementById('calculatedOrderPrice').textContent = 'Rp ' + price.toLocaleString('id-ID');
+            document.getElementById('priceBreakdownText').textContent = notes.join(' • ');
+            return price;
+        }
+
+        function handleCreateOrder(e) {
+            e.preventDefault();
+            playClickSfx(950);
+
+            const clientName = document.getElementById('orderClientName').value.trim();
+            const contactInfo = document.getElementById('orderContactInfo').value.trim();
+            const serviceId = document.getElementById('orderServiceSelect').value;
+            const title = document.getElementById('orderTitle').value.trim();
+            const deadlineType = document.getElementById('orderDeadlineSpeed').value;
+            const targetDate = document.getElementById('orderTargetDate').value.trim() || state.selectedDate;
+            const totalPrice = recalculateOrderPrice();
+
+            const srv = SERVICES_DATA.find(s => s.id === serviceId) || SERVICES_DATA[0];
+            const randomNum = Math.floor(1000 + Math.random() * 9000);
+            const newCode = `JKY-${randomNum}`;
+
+            const newOrder = {
+                code: newCode,
+                clientName,
+                contactInfo,
+                serviceId,
+                serviceName: srv.categoryLabel,
+                title,
+                deadlineType,
+                targetDate,
+                fileName: tempAttachedFileName || 'instruksi_via_form.txt',
+                totalPrice,
+                statusIndex: 0,
+                resultFile: '',
+                createdAt: 'Baru Saja'
+            };
+
+            state.orders.unshift(newOrder);
+            state.selectedOrderCode = newCode;
+            state.lastCreatedReceipt = newOrder; sendOrderToIG(newOrder);
+            tempAttachedFileName = '';
+            saveOrders();
+
+            showToast(`Order berhasil dikirim! Kode Tracking: ${newCode}`);
+            renderMainScreen();
+        }
+
+        function selectTrackedOrder(code) {
+            playClickSfx(700);
+            state.selectedOrderCode = code;
+            renderMainScreen();
+        }
+
+        function searchOrderByCode(e) {
+            e.preventDefault();
+            const input = document.getElementById('trackCodeSearchInput');
+            if (!input) return;
+            const query = input.value.trim().toUpperCase();
+            const found = state.orders.find(o => o.code.toUpperCase() === query);
+            if (found) {
+                playClickSfx(850);
+                state.selectedOrderCode = found.code;
+                renderMainScreen();
+                showToast(`Pesanan ${found.code} ditemukan!`);
+            } else {
+                playClickSfx(320);
+                showToast(`Kode "${query}" tidak ditemukan. Coba pilih dari dropdown.`);
+            }
+        }
+
+        function adminUpdateOrderPrice(code, newPrice) {
+            const order = state.orders.find(o => o.code === code);
+            if (order) {
+                order.totalPrice = Math.max(5000, Number(newPrice) || 5000);
+                saveOrders();
+                showToast(`Harga deal ${code} diperbarui ke Rp ${order.totalPrice.toLocaleString('id-ID')}`);
+            }
+        }
+
+        function adminUpdateOrderStatus(code, newIdx) {
+            playClickSfx(860);
+            const order = state.orders.find(o => o.code === code);
+            if (order) {
+                order.statusIndex = newIdx;
+                saveOrders();
+                renderMainScreen();
+                showToast(`Status ${code} diubah menjadi: ${ORDER_STEPS[newIdx]}`);
+            }
+        }
+
+        function adminUploadResult(code) {
+            playClickSfx(920);
+            const order = state.orders.find(o => o.code === code);
+            const fileInput = document.getElementById('adminFile_' + code);
+            if (order && fileInput) {
+                order.resultFile = fileInput.value.trim() || `Hasil_${code}.zip`;
+                order.statusIndex = 3;
+                saveOrders();
+                renderMainScreen();
+                showToast(`File hasil "${order.resultFile}" berhasil dikirim ke Tracker!`);
+            }
+        }
+
+        function simulateDownloadResult(fileName) {
+            playClickSfx(880);
+            showToast(`Mengunduh paket hasil pengerjaan: ${fileName} ...`);
+        }
+
+        // --- 8. TOAST & QUICK CHAT MODAL ---
+        let toastTimer = null;
+        function showToast(msg) {
+            const toast = document.getElementById('y2kToast');
+            document.getElementById('y2kToastMsg').textContent = msg;
+            toast.classList.remove('hidden');
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 4200);
+        }
+
+        function hideToast() {
+            document.getElementById('y2kToast').classList.add('hidden');
+        }
+
+        function openQuickChatModal() {
+            playClickSfx(820);
+            document.getElementById('quickChatModal').classList.remove('hidden');
+        }
+
+        function closeQuickChatModal() {
+            playClickSfx(640);
+            document.getElementById('quickChatModal').classList.add('hidden');
+        }
+
+        async function sendQuickChat(e) {
+            e.preventDefault();
+            const input = document.getElementById('quickChatInput');
+            const text = input.value.trim();
+            if (!text) return;
+            playClickSfx(780);
+            const box = document.getElementById('chatHistoryBox');
+            box.innerHTML += `<div class="lcd-content relative z-10 text-xs font-mono-tech text-right"><span class="text-white font-bold">[KAMU]:</span> ${esc(text)}</div>`;
+            input.value = '';
+            box.scrollTop = box.scrollHeight;
+            const ok = await postBackend('/api/feedback', { text: text.slice(0, 500) });
+            playClickSfx(860);
+            box.innerHTML += `<div class="lcd-content relative z-10 text-xs font-mono-tech"><span class="text-[#ff7eb5] font-bold">[MALA]:</span> ${ok ? 'Makasih! Saran/pesanmu sudah masuk ke DM Mala ★' : `Server lagi off. <a class="underline text-white" target="_blank" href="https://ig.me/m/${IG_USERNAME}">Kirim langsung lewat DM IG</a>`}</div>`;
+            box.scrollTop = box.scrollHeight;
+        }
+
+        // --- 9. LIVE CLOCK & INITIALIZATION ---
+        function startLiveClock() {
+            function tick() {
+                const now = new Date();
+                const str = now.toTimeString().split(' ')[0];
+                document.getElementById('liveClock').textContent = str;
+            }
+            tick();
+            setInterval(tick, 1000);
+        }
+
+        window.onload = function () {
+            startLiveClock();
+            initOscilloscope();
+            updateWaveControls();
+            initTelemetryWidgets();
+            initMiniCalendar();
+            buildCategoryButtons();
+            saveOrders();
+            renderMainScreen();
+        };
+    </script>
+</body>
+</html>
